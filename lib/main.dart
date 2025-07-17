@@ -5,6 +5,7 @@ import 'package:yoweme/screens/dashboard_screen.dart';
 import 'package:yoweme/screens/friend_detail_screen.dart';
 import 'package:yoweme/screens/add_expense_screen.dart';
 import 'package:yoweme/screens/ai_insights_screen.dart';
+import 'package:yoweme/screens/notification_screen.dart';
 import 'package:yoweme/services/gemini_service.dart';
 
 void main() async {
@@ -72,7 +73,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const DashboardScreen(),
     const AIInsightsScreen(),
     const AddExpenseScreen(),
-    const PlaceholderScreen(title: 'Activity'),
+    const NotificationsScreen(),
     const PlaceholderScreen(title: 'Profile'),
   ];
 

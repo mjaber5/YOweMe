@@ -58,10 +58,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(LucideIcons.x, color: AppColors.primaryText),
-          onPressed: () => Navigator.pop(context),
-        ),
+
         title: const Text(
           'Add Expense',
           style: TextStyle(
