@@ -1,0 +1,428 @@
+// lib/screens/dashboard_screen.dart
+import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../core/utils/constants/colors.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  // Mock data - replace with real data from your state management
+  final List<Map<String, dynamic>> mockFriends = [
+    {
+      'name': 'Peter',
+      'amount': -54.68,
+      'date': '01 March 2022',
+      'avatar': 'P',
+      'color': Colors.blue,
+    },
+    {
+      'name': 'Victor',
+      'amount': 260.68,
+      'date': '10 March 2022',
+      'avatar': 'V',
+      'color': Colors.green,
+    },
+    {
+      'name': 'Camila',
+      'amount': -13.20,
+      'date': '15 March 2022',
+      'avatar': 'C',
+      'color': Colors.purple,
+    },
+    {
+      'name': 'Alex',
+      'amount': 15.99,
+      'date': '18 March 2022',
+      'avatar': 'A',
+      'color': Colors.orange,
+    },
+    {
+      'name': 'Arthur',
+      'amount': -1.15,
+      'date': '24 March 2022',
+      'avatar': 'A',
+      'color': Colors.red,
+    },
+    {
+      'name': 'Paula',
+      'amount': -95.71,
+      'date': '25 March 2022',
+      'avatar': 'P',
+      'color': Colors.teal,
+    },
+  ];
+
+  double get totalBalance {
+    return mockFriends.fold(0.0, (sum, friend) => sum + friend['amount']);
+  }
+
+  double get totalOwed {
+    return mockFriends
+        .where((friend) => friend['amount'] < 0)
+        .fold(0.0, (sum, friend) => sum + friend['amount'].abs());
+  }
+
+  double get totalOwing {
+    return mockFriends
+        .where((friend) => friend['amount'] > 0)
+        .fold(0.0, (sum, friend) => sum + friend['amount']);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.lightGray,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(LucideIcons.plus, size: 24),
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.primaryText,
+                    ),
+                  ),
+                  const Text(
+                    'Friends',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryText,
+                    ),
+                  ),
+                  const SizedBox(width: 48), // Balance the plus button
+                ],
+              ),
+            ),
+
+            // Balance Summary Card
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.shadowLight,
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Summary',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.secondaryText,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$${totalBalance.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: totalBalance >= 0
+                          ? AppColors.positiveGreen
+                          : AppColors.negativeRed,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Overall',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.secondaryText,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '\$${totalBalance.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: totalBalance >= 0
+                                    ? AppColors.positiveGreen
+                                    : AppColors.negativeRed,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'I owe',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.secondaryText,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '\$${totalOwed.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.negativeRed,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Owes me',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.secondaryText,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '\$${totalOwing.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.positiveGreen,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Friends List
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                child: mockFriends.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        itemCount: mockFriends.length,
+                        itemBuilder: (context, index) {
+                          final friend = mockFriends[index];
+                          return _buildFriendItem(friend);
+                        },
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomNavBar(),
+    );
+  }
+
+  Widget _buildFriendItem(Map<String, dynamic> friend) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Avatar
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: friend['color'],
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Center(
+              child: Text(
+                friend['avatar'],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          // Friend info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  friend['name'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryText,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  friend['date'],
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.secondaryText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Amount
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                friend['amount'] < 0 ? 'YOU OWE' : 'OWES YOU',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: friend['amount'] < 0
+                      ? AppColors.negativeRed
+                      : AppColors.positiveGreen,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '\$${friend['amount'].abs().toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: friend['amount'] < 0
+                      ? AppColors.negativeRed
+                      : AppColors.positiveGreen,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            color: AppColors.surfaceGray,
+            borderRadius: BorderRadius.circular(60),
+          ),
+          child: const Icon(
+            LucideIcons.users,
+            size: 48,
+            color: AppColors.secondaryText,
+          ),
+        ),
+        const SizedBox(height: 24),
+        const Text(
+          'No friends found',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primaryText,
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Add friends to start splitting expenses',
+          style: TextStyle(fontSize: 14, color: AppColors.secondaryText),
+        ),
+        const SizedBox(height: 32),
+        ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryTeal,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: const Text('Add friend to splitwise'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomNavBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        border: Border(top: BorderSide(color: AppColors.surfaceGray, width: 1)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildNavItem(LucideIcons.users, true),
+          _buildNavItem(LucideIcons.calculator, false),
+          _buildNavItem(LucideIcons.plus, false),
+          _buildNavItem(LucideIcons.bell, false),
+          _buildNavItem(LucideIcons.user, false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, bool isSelected) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isSelected ? AppColors.primaryTeal : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        icon,
+        size: 24,
+        color: isSelected ? Colors.white : AppColors.secondaryText,
+      ),
+    );
+  }
+}
