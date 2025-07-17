@@ -1,4 +1,4 @@
-// lib/screens/expense_detail_screen.dart - Enhanced Professional Version
+// lib/screens/expense_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -111,159 +111,157 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
                   child: Column(
                     children: [
-                      _buildExpenseOverviewCard(),
-                      const SizedBox(height: 24),
-                      _buildExpenseDetailsCard(),
-                      const SizedBox(height: 24),
-                      _buildParticipantsCard(),
-                      const SizedBox(height: 24),
-                      _buildPaymentTimelineCard(),
-                      const SizedBox(height: 100), // Space for floating button
+                      _buildHeader(),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: Column(
+                          children: [
+                            _buildExpenseOverviewCard(),
+                            const SizedBox(height: 24),
+                            _buildExpenseDetailsCard(),
+                            const SizedBox(height: 24),
+                            _buildParticipantsCard(),
+                            const SizedBox(height: 24),
+                            _buildPaymentTimelineCard(),
+                            const SizedBox(
+                              height: 100,
+                            ), // Space for floating button
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: _buildFloatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
-  }
-
-  Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      expandedHeight: 200,
-      floating: false,
-      pinned: true,
-      backgroundColor: Colors.white,
-      foregroundColor: AppColors.primaryText,
-      elevation: 0,
-      shadowColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      leading: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+            Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: _buildFloatingActionButton(),
             ),
           ],
         ),
-        child: IconButton(
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            Navigator.pop(context);
-          },
-          icon: const Icon(LucideIcons.arrowLeft, size: 20),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primaryTeal,
+            AppColors.primaryTeal.withOpacity(0.8),
+          ],
         ),
       ),
-      actions: [
-        Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(LucideIcons.arrowLeft, size: 20),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: _showMoreOptions,
+                  icon: const Icon(LucideIcons.moreVertical, size: 20),
+                ),
               ),
             ],
           ),
-          child: IconButton(
-            onPressed: _showMoreOptions,
-            icon: const Icon(LucideIcons.moreVertical, size: 20),
-          ),
-        ),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primaryTeal,
-                AppColors.primaryTeal.withOpacity(0.8),
-              ],
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                          ),
-                        ),
-                        child: Text(
-                          widget.expenseId,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      _buildStatusBadge(isHeader: true),
-                    ],
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white.withOpacity(0.3)),
+                ),
+                child: Text(
+                  widget.expenseId,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    widget.description,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Split between ${widget.participants.length} people',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
+                ),
               ),
+              const Spacer(),
+              _buildStatusBadge(isHeader: true),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            widget.description,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              height: 1.2,
             ),
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            'Split between ${widget.participants.length} people',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 16,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -420,7 +418,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             ],
           ),
           const SizedBox(height: 20),
-
           _buildDetailRow('Paid by', widget.paidBy, LucideIcons.creditCard),
           const SizedBox(height: 16),
           _buildDetailRow(
@@ -430,7 +427,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
           ),
           const SizedBox(height: 16),
           _buildDetailRow('Status', widget.status, LucideIcons.checkCircle),
-
           if (widget.description.isNotEmpty) ...[
             const SizedBox(height: 16),
             _buildDetailRow(
@@ -543,7 +539,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             ],
           ),
           const SizedBox(height: 20),
-
           ...participantSplits.asMap().entries.map((entry) {
             final index = entry.key;
             final participant = entry.value;
@@ -554,7 +549,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               child: _buildEnhancedParticipantRow(participant),
             );
           }).toList(),
-
           const SizedBox(height: 20),
           Container(
             padding: const EdgeInsets.all(16),
@@ -611,7 +605,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
       ),
       child: Row(
         children: [
-          // Enhanced Avatar with status indicator
           Stack(
             children: [
               Container(
@@ -660,8 +653,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             ],
           ),
           const SizedBox(width: 16),
-
-          // Enhanced participant info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -723,8 +714,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               ],
             ),
           ),
-
-          // Amount with enhanced styling
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -794,7 +783,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             ],
           ),
           const SizedBox(height: 20),
-
           _buildTimelineItem(
             'Expense Created',
             _formatDate(widget.createdDate),
@@ -1043,7 +1031,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               width: 40,
               height: 4,
@@ -1053,8 +1040,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               ),
             ),
             const SizedBox(height: 24),
-
-            // Title
             const Text(
               'Expense Options',
               style: TextStyle(
@@ -1064,8 +1049,6 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               ),
             ),
             const SizedBox(height: 24),
-
-            // Enhanced Options
             _buildEnhancedOption(
               icon: LucideIcons.edit3,
               title: 'Edit Expense',
@@ -1265,7 +1248,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
       participant['paidDate'] = _formatDate(DateTime.now());
     });
 
-    HapticFeedback.vibrate();
+    HapticFeedback.selectionClick();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${participant['name']} marked as paid!'),
@@ -1277,7 +1260,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
   }
 
   void _sendReminder() {
-    HapticFeedback.vibrate();
+    HapticFeedback.selectionClick();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Row(
@@ -1295,7 +1278,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
   }
 
   void _shareExpense() {
-    HapticFeedback.lightImpact();
+    HapticFeedback.selectionClick();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Row(
