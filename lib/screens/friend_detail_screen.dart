@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../core/utils/constants/colors.dart';
+import 'expense_detail_screen.dart';
 
 class FriendDetailScreen extends StatefulWidget {
   final String friendName;
@@ -22,39 +23,69 @@ class FriendDetailScreen extends StatefulWidget {
 class _FriendDetailScreenState extends State<FriendDetailScreen> {
   final List<Map<String, dynamic>> mockTransactions = [
     {
-      'title': 'Uber',
+      'id': '#001',
+      'title': 'Pizza Night',
+      'description': 'Dinner at Tony\'s Pizza',
       'date': '11 March 2024',
       'amount': -19.80,
-      'icon': LucideIcons.car,
-      'color': Colors.black,
+      'icon': LucideIcons.utensils,
+      'color': Colors.orange,
+      'category': 'Food & Dining',
+      'participants': ['You', 'Peter', 'Victor'],
+      'paidBy': 'Peter',
+      'status': 'Pending',
     },
     {
+      'id': '#002',
       'title': 'Groceries',
+      'description': 'Weekly shopping at Walmart',
       'date': '8 March 2024',
       'amount': 862.08,
       'icon': LucideIcons.shoppingBag,
       'color': Colors.green,
+      'category': 'Groceries',
+      'participants': ['You', 'Peter'],
+      'paidBy': 'You',
+      'status': 'Paid',
     },
     {
-      'title': 'Adventures',
+      'id': '#003',
+      'title': 'Movie Night',
+      'description': 'Cinema tickets and snacks',
       'date': '15 Feb 2024',
       'amount': -15.99,
-      'icon': LucideIcons.mountain,
-      'color': Colors.blue,
-    },
-    {
-      'title': 'Cinema',
-      'date': '10 Jan 2024',
-      'amount': -20.00,
       'icon': LucideIcons.film,
       'color': Colors.purple,
+      'category': 'Entertainment',
+      'participants': ['You', 'Peter', 'Camila'],
+      'paidBy': 'Peter',
+      'status': 'Paid',
     },
     {
-      'title': 'Present for Andy',
+      'id': '#004',
+      'title': 'Uber Ride',
+      'description': 'Shared ride to airport',
+      'date': '10 Jan 2024',
+      'amount': -20.00,
+      'icon': LucideIcons.car,
+      'color': Colors.black,
+      'category': 'Transportation',
+      'participants': ['You', 'Peter'],
+      'paidBy': 'Peter',
+      'status': 'Paid',
+    },
+    {
+      'id': '#005',
+      'title': 'Birthday Gift',
+      'description': 'Present for Andy\'s birthday',
       'date': '5 Jan 2024',
       'amount': -64.30,
       'icon': LucideIcons.gift,
       'color': Colors.pink,
+      'category': 'Shopping',
+      'participants': ['You', 'Peter', 'Alex'],
+      'paidBy': 'Peter',
+      'status': 'Paid',
     },
   ];
 
@@ -308,76 +339,110 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
   }
 
   Widget _buildTransactionItem(Map<String, dynamic> transaction) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Transaction Icon
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: transaction['color'].withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
+    return GestureDetector(
+      onTap: () => _navigateToExpenseDetail(transaction),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowLight,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-            child: Icon(
-              transaction['icon'],
-              size: 20,
-              color: transaction['color'],
+          ],
+        ),
+        child: Row(
+          children: [
+            // Transaction Icon
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: transaction['color'].withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                transaction['icon'],
+                size: 20,
+                color: transaction['color'],
+              ),
             ),
-          ),
 
-          const SizedBox(width: 16),
+            const SizedBox(width: 16),
 
-          // Transaction Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Transaction Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction['title'],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryText,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    transaction['date'],
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.secondaryText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Amount and Arrow
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  transaction['title'],
-                  style: const TextStyle(
+                  '${transaction['amount'] < 0 ? '-' : ''}\$${transaction['amount'].abs().toStringAsFixed(2)}',
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.primaryText,
+                    color: transaction['amount'] < 0
+                        ? AppColors.negativeRed
+                        : AppColors.positiveGreen,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  transaction['date'],
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.secondaryText,
-                  ),
+                const Icon(
+                  LucideIcons.chevronRight,
+                  size: 16,
+                  color: AppColors.secondaryText,
                 ),
               ],
             ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
 
-          // Amount
-          Text(
-            '${transaction['amount'] < 0 ? '-' : ''}\$${transaction['amount'].abs().toStringAsFixed(2)}',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: transaction['amount'] < 0
-                  ? AppColors.negativeRed
-                  : AppColors.positiveGreen,
-            ),
-          ),
-        ],
+  void _navigateToExpenseDetail(Map<String, dynamic> transaction) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExpenseDetailScreen(
+          expenseId: transaction['id'],
+          description: transaction['description'],
+          amount: transaction['amount'].abs().toDouble(),
+          paidBy: transaction['paidBy'],
+          participants: List<String>.from(transaction['participants']),
+          category: transaction['category'],
+          createdDate: DateTime.parse(
+            '2024-03-11',
+          ), // Replace with transaction['date'] if dynamic parsing needed
+          status: transaction['status'],
+        ),
       ),
     );
   }
@@ -425,21 +490,18 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
   }
 
   void _proceedToPayment() {
-    // Implement payment flow
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Proceeding to payment...')));
   }
 
   void _sendReminder() {
-    // Implement reminder functionality
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Reminder sent!')));
   }
 
   void _sharePayment() {
-    // Implement share functionality
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Sharing payment details...')));

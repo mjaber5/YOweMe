@@ -1,7 +1,8 @@
-// lib/screens/dashboard_screen.dart
+// lib/screens/dashboard_screen.dart (Updated with navigation)
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../core/utils/constants/colors.dart';
+import 'friend_detail_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -19,6 +20,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'date': '01 March 2022',
       'avatar': 'P',
       'color': Colors.blue,
+      'id': '1',
     },
     {
       'name': 'Victor',
@@ -26,6 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'date': '10 March 2022',
       'avatar': 'V',
       'color': Colors.green,
+      'id': '2',
     },
     {
       'name': 'Camila',
@@ -33,6 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'date': '15 March 2022',
       'avatar': 'C',
       'color': Colors.purple,
+      'id': '3',
     },
     {
       'name': 'Alex',
@@ -40,6 +44,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'date': '18 March 2022',
       'avatar': 'A',
       'color': Colors.orange,
+      'id': '4',
     },
     {
       'name': 'Arthur',
@@ -47,6 +52,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'date': '24 March 2022',
       'avatar': 'A',
       'color': Colors.red,
+      'id': '5',
     },
     {
       'name': 'Paula',
@@ -54,6 +60,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'date': '25 March 2022',
       'avatar': 'P',
       'color': Colors.teal,
+      'id': '6',
     },
   ];
 
@@ -243,102 +250,127 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
     );
   }
 
   Widget _buildFriendItem(Map<String, dynamic> friend) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Avatar
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: friend['color'],
-              borderRadius: BorderRadius.circular(24),
+    return GestureDetector(
+      onTap: () => _navigateToFriendDetail(friend),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowLight,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-            child: Center(
-              child: Text(
-                friend['avatar'],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
+          ],
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: friend['color'],
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Center(
+                child: Text(
+                  friend['avatar'],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          const SizedBox(width: 16),
+            const SizedBox(width: 16),
 
-          // Friend info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Friend info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    friend['name'],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryText,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    friend['date'],
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.secondaryText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Amount and arrow
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  friend['name'],
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryText,
+                  friend['amount'] < 0 ? 'YOU OWE' : 'OWES YOU',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    color: friend['amount'] < 0
+                        ? AppColors.negativeRed
+                        : AppColors.positiveGreen,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  friend['date'],
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.secondaryText,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      '\$${friend['amount'].abs().toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: friend['amount'] < 0
+                            ? AppColors.negativeRed
+                            : AppColors.positiveGreen,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      LucideIcons.chevronRight,
+                      size: 16,
+                      color: AppColors.secondaryText,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
 
-          // Amount
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                friend['amount'] < 0 ? 'YOU OWE' : 'OWES YOU',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                  color: friend['amount'] < 0
-                      ? AppColors.negativeRed
-                      : AppColors.positiveGreen,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '\$${friend['amount'].abs().toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: friend['amount'] < 0
-                      ? AppColors.negativeRed
-                      : AppColors.positiveGreen,
-                ),
-              ),
-            ],
-          ),
-        ],
+  void _navigateToFriendDetail(Map<String, dynamic> friend) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FriendDetailScreen(
+          friendName: friend['name'],
+          balance: friend['amount'].toDouble(),
+          friendId: friend['id'],
+        ),
       ),
     );
   }
@@ -388,41 +420,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: const Text('Add friend to splitwise'),
         ),
       ],
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: AppColors.surfaceGray, width: 1)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavItem(LucideIcons.users, true),
-          _buildNavItem(LucideIcons.calculator, false),
-          _buildNavItem(LucideIcons.plus, false),
-          _buildNavItem(LucideIcons.bell, false),
-          _buildNavItem(LucideIcons.user, false),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.primaryTeal : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(
-        icon,
-        size: 24,
-        color: isSelected ? Colors.white : AppColors.secondaryText,
-      ),
     );
   }
 }
