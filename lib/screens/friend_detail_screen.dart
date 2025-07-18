@@ -603,13 +603,6 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Row(
           children: [
@@ -638,7 +631,6 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primaryText,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

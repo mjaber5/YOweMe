@@ -1,6 +1,5 @@
 // lib/screens/expense_detail_screen.dart
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../core/utils/constants/colors.dart';
@@ -110,7 +109,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.getBackgroundColor(context),
       body: SafeArea(
         child: Stack(
           children: [
@@ -160,16 +159,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.primaryTeal,
-            AppColors.primaryTeal.withOpacity(0.8),
-          ],
-        ),
-      ),
+      decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -179,7 +169,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: IconButton(
@@ -193,7 +183,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: IconButton(
@@ -256,8 +246,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -271,7 +268,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                       'Total Amount',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.secondaryText,
+                        color: AppColors.getSecondaryTextColor(context),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -306,7 +303,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
+              color: AppColors.getSurfaceColor(context),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -318,7 +315,13 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                     LucideIcons.users,
                   ),
                 ),
-                Container(width: 1, height: 40, color: AppColors.surfaceGray),
+                Container(
+                  width: 1,
+                  height: 40,
+                  color: AppColors.getSecondaryTextColor(
+                    context,
+                  ).withOpacity(0.2),
+                ),
                 Expanded(
                   child: _buildOverviewItem(
                     'Category',
@@ -343,17 +346,17 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
           label,
           style: TextStyle(
             fontSize: 12,
-            color: AppColors.secondaryText,
+            color: AppColors.getSecondaryTextColor(context),
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.primaryText,
+            color: AppColors.getPrimaryTextColor(context),
           ),
           textAlign: TextAlign.center,
         ),
@@ -365,8 +368,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -379,12 +389,12 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                 color: AppColors.primaryTeal,
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Expense Details',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primaryText,
+                  color: AppColors.getPrimaryTextColor(context),
                 ),
               ),
             ],
@@ -432,17 +442,17 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.secondaryText,
+                  color: AppColors.getSecondaryTextColor(context),
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primaryText,
+                  color: AppColors.getPrimaryTextColor(context),
                 ),
               ),
             ],
@@ -456,8 +466,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -473,12 +490,12 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                     color: AppColors.primaryTeal,
                   ),
                   const SizedBox(width: 12),
-                  const Text(
+                  Text(
                     'Participants',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primaryText,
+                      color: AppColors.getPrimaryTextColor(context),
                     ),
                   ),
                 ],
@@ -529,12 +546,12 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Total Split Amount',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.primaryText,
+                    color: AppColors.getPrimaryTextColor(context),
                   ),
                 ),
                 Text(
@@ -558,13 +575,13 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: participant['paid']
-            ? AppColors.success.withOpacity(0.05)
-            : AppColors.warning.withOpacity(0.05),
+            ? AppColors.positiveGreen.withOpacity(0.05)
+            : AppColors.negativeRed.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: participant['paid']
-              ? AppColors.success.withOpacity(0.2)
-              : AppColors.warning.withOpacity(0.2),
+              ? AppColors.positiveGreen.withOpacity(0.2)
+              : AppColors.negativeRed.withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -603,10 +620,13 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                   height: 16,
                   decoration: BoxDecoration(
                     color: participant['paid']
-                        ? AppColors.success
-                        : AppColors.warning,
+                        ? AppColors.positiveGreen
+                        : AppColors.negativeRed,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white, width: 2),
+                    border: Border.all(
+                      color: AppColors.getCardColor(context),
+                      width: 2,
+                    ),
                   ),
                   child: Icon(
                     participant['paid'] ? LucideIcons.check : LucideIcons.clock,
@@ -624,10 +644,10 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               children: [
                 Text(
                   participant['name'],
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.primaryText,
+                    color: AppColors.getPrimaryTextColor(context),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -635,7 +655,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                   participant['email'],
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.secondaryText,
+                    color: AppColors.getSecondaryTextColor(context),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -648,8 +668,8 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                       ),
                       decoration: BoxDecoration(
                         color: participant['paid']
-                            ? AppColors.success.withOpacity(0.2)
-                            : AppColors.warning.withOpacity(0.2),
+                            ? AppColors.positiveGreen.withOpacity(0.2)
+                            : AppColors.negativeRed.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -658,8 +678,8 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: participant['paid']
-                              ? AppColors.success
-                              : AppColors.warning,
+                              ? AppColors.positiveGreen
+                              : AppColors.negativeRed,
                         ),
                       ),
                     ),
@@ -670,7 +690,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                         participant['paidDate'],
                         style: TextStyle(
                           fontSize: 10,
-                          color: AppColors.secondaryText,
+                          color: AppColors.getSecondaryTextColor(context),
                         ),
                       ),
                     ],
@@ -684,10 +704,10 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             children: [
               Text(
                 '\$${participant['amount'].toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primaryText,
+                  color: AppColors.getPrimaryTextColor(context),
                 ),
               ),
               if (!participant['paid'])
@@ -720,8 +740,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -730,12 +757,12 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             children: [
               Icon(LucideIcons.clock, size: 20, color: AppColors.primaryTeal),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Payment Timeline',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primaryText,
+                  color: AppColors.getPrimaryTextColor(context),
                 ),
               ),
             ],
@@ -745,21 +772,21 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             'Expense Created',
             _formatDate(widget.createdDate),
             LucideIcons.plus,
-            AppColors.info,
+            AppColors.primaryTeal,
             isCompleted: true,
           ),
           _buildTimelineItem(
             'Payment by ${widget.paidBy}',
             _formatDate(widget.createdDate),
             LucideIcons.creditCard,
-            AppColors.success,
+            AppColors.positiveGreen,
             isCompleted: true,
           ),
           _buildTimelineItem(
             'Pending Settlements',
             '${participantSplits.where((p) => !p['paid']).length} remaining',
             LucideIcons.clock,
-            AppColors.warning,
+            AppColors.negativeRed,
             isCompleted: false,
           ),
         ],
@@ -802,15 +829,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: isCompleted
-                        ? AppColors.primaryText
-                        : AppColors.secondaryText,
+                        ? AppColors.getPrimaryTextColor(context)
+                        : AppColors.getSecondaryTextColor(context),
                   ),
                 ),
                 Text(
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.secondaryText,
+                    color: AppColors.getSecondaryTextColor(context),
                   ),
                 ),
               ],
@@ -830,13 +857,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             child: Container(
               height: 56,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primaryTeal,
-                    AppColors.primaryTeal.withOpacity(0.8),
-                  ],
-                ),
+                gradient: AppColors.getPrimaryGradient(context),
                 borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryTeal.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Material(
                 color: Colors.transparent,
@@ -872,8 +901,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.getCardColor(context),
               borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.getShadowLight(context),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Material(
               color: Colors.transparent,
@@ -903,16 +939,16 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
     switch (widget.status.toLowerCase()) {
       case 'paid':
       case 'settled':
-        statusColor = AppColors.success;
+        statusColor = AppColors.positiveGreen;
         break;
       case 'pending':
-        statusColor = AppColors.warning;
+        statusColor = AppColors.negativeRed;
         break;
       case 'overdue':
-        statusColor = AppColors.error;
+        statusColor = AppColors.negativeRed;
         break;
       default:
-        statusColor = AppColors.info;
+        statusColor = AppColors.primaryTeal;
     }
 
     return Container(
@@ -968,9 +1004,9 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
       isScrollControlled: true,
       builder: (context) => Container(
         padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: AppColors.getCardColor(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -979,17 +1015,19 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.secondaryText.withOpacity(0.3),
+                color: AppColors.getSecondaryTextColor(
+                  context,
+                ).withOpacity(0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Expense Options',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primaryText,
+                color: AppColors.getPrimaryTextColor(context),
               ),
             ),
             const SizedBox(height: 24),
@@ -1004,28 +1042,28 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
               icon: LucideIcons.copy,
               title: 'Duplicate Expense',
               subtitle: 'Create a similar expense',
-              color: AppColors.info,
+              color: AppColors.primaryTeal,
               onTap: () => Navigator.pop(context),
             ),
             _buildEnhancedOption(
               icon: LucideIcons.users,
               title: 'Manage Participants',
               subtitle: 'Add or remove people from this expense',
-              color: AppColors.neutralBlue,
+              color: AppColors.primaryTeal,
               onTap: () => Navigator.pop(context),
             ),
             _buildEnhancedOption(
               icon: LucideIcons.download,
               title: 'Export Details',
               subtitle: 'Download expense report as PDF',
-              color: AppColors.success,
+              color: AppColors.positiveGreen,
               onTap: () => Navigator.pop(context),
             ),
             _buildEnhancedOption(
               icon: LucideIcons.trash2,
               title: 'Delete Expense',
               subtitle: 'Permanently remove this expense',
-              color: AppColors.error,
+              color: AppColors.negativeRed,
               onTap: () {
                 Navigator.pop(context);
                 _showDeleteConfirmation();
@@ -1059,8 +1097,8 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             decoration: BoxDecoration(
               border: Border.all(
                 color: isDestructive
-                    ? AppColors.error.withOpacity(0.2)
-                    : AppColors.surfaceGray,
+                    ? AppColors.negativeRed.withOpacity(0.2)
+                    : AppColors.getSecondaryTextColor(context).withOpacity(0.2),
               ),
               borderRadius: BorderRadius.circular(16),
             ),
@@ -1086,8 +1124,8 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: isDestructive
-                              ? AppColors.error
-                              : AppColors.primaryText,
+                              ? AppColors.negativeRed
+                              : AppColors.getPrimaryTextColor(context),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -1096,8 +1134,8 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                         style: TextStyle(
                           fontSize: 13,
                           color: isDestructive
-                              ? AppColors.error.withOpacity(0.7)
-                              : AppColors.secondaryText,
+                              ? AppColors.negativeRed.withOpacity(0.7)
+                              : AppColors.getSecondaryTextColor(context),
                         ),
                       ),
                     ],
@@ -1105,7 +1143,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
                 ),
                 Icon(
                   LucideIcons.chevronRight,
-                  color: AppColors.secondaryText,
+                  color: AppColors.getSecondaryTextColor(context),
                   size: 18,
                 ),
               ],
@@ -1120,7 +1158,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.getCardColor(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         contentPadding: const EdgeInsets.all(24),
         title: Row(
@@ -1128,30 +1166,30 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
+                color: AppColors.negativeRed.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 LucideIcons.alertTriangle,
-                color: AppColors.error,
+                color: AppColors.negativeRed,
                 size: 20,
               ),
             ),
             const SizedBox(width: 12),
-            const Text(
+            Text(
               'Delete Expense',
               style: TextStyle(
-                color: AppColors.primaryText,
+                color: AppColors.getPrimaryTextColor(context),
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
             ),
           ],
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you want to delete this expense? This action cannot be undone and will affect all participants.',
           style: TextStyle(
-            color: AppColors.secondaryText,
+            color: AppColors.getSecondaryTextColor(context),
             fontSize: 14,
             height: 1.4,
           ),
@@ -1159,10 +1197,10 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               'Cancel',
               style: TextStyle(
-                color: AppColors.primaryText,
+                color: AppColors.getPrimaryTextColor(context),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1170,7 +1208,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: AppColors.negativeRed,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -1196,7 +1234,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${participant['name']} marked as paid!'),
-        backgroundColor: AppColors.success,
+        backgroundColor: AppColors.positiveGreen,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -1214,7 +1252,7 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
             Text('Reminder sent to all participants!'),
           ],
         ),
-        backgroundColor: AppColors.success,
+        backgroundColor: AppColors.positiveGreen,
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 3),
       ),
@@ -1224,15 +1262,15 @@ class _ExpenseDetailScreenState extends State<ExpenseDetailScreen>
   void _shareExpense() {
     HapticFeedback.selectionClick();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Row(
+      SnackBar(
+        content: const Row(
           children: [
             Icon(LucideIcons.share2, color: Colors.white, size: 18),
             SizedBox(width: 12),
             Text('Sharing expense details...'),
           ],
         ),
-        backgroundColor: AppColors.info,
+        backgroundColor: AppColors.primaryTeal,
         behavior: SnackBarBehavior.floating,
       ),
     );
