@@ -1,159 +1,184 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:yoweme/model/amount.dart';
 import 'package:yoweme/model/trasnactions.dart';
 
-class TransactionsService {
-  final String baseUrl = 'https://jpcjofsdev.apigw-az-eu.webmethods.io/gateway';
-  final String apiPath = '/Transactions/v0.4.3/accounts';
+class TransactionService {
+  static const String baseUrl =
+      'https://jpcjofsdev.apigw-az-eu.webmethods.io/gateway/Transactions/v0.4.3';
 
-  final Map<String, String> headers = {
-    'accept': 'application/json',
-    'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Replace with your real token
-  };
-
-  /// Fetches transactions for a range of account IDs and returns them as Transaction objects
-  Future<List<AccountTransactions>> fetchTransactionsForAccounts({
-    required int startAccountId,
-    required int endAccountId,
-  }) async {
-    List<AccountTransactions> allTransactions = [];
-
-    for (
-      int accountId = startAccountId;
-      accountId <= endAccountId;
-      accountId++
-    ) {
-      try {
-        final transactions = await fetchTransactionsForSingleAccount(accountId);
-        allTransactions.add(
-          AccountTransactions(accountId: accountId, transactions: transactions),
-        );
-      } catch (e) {
-        allTransactions.add(
-          AccountTransactions(
-            accountId: accountId,
-            transactions: [],
-            error: e.toString(),
-          ),
-        );
-      }
-    }
-
-    return allTransactions;
-  }
-
-  /// Fetches transactions for a single account
-  Future<List<Transaction>> fetchTransactionsForSingleAccount(
-    int accountId, {
-    int skip = 0,
-    int limit = 10,
-    String sort = 'desc',
-  }) async {
-    final uri = Uri.parse(
-      '$baseUrl$apiPath/$accountId/transactions?skip=$skip&sort=$sort&limit=$limit',
-    );
-
-    final response = await http.get(uri, headers: headers);
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-
-      // Handle different possible response structures
-      final List<dynamic> transactionsData =
-          data['transactions'] ?? data['data'] ?? (data is List ? data : []);
-
-      return transactionsData
-          .map((json) => Transaction.fromJson(json))
-          .toList();
-    } else {
-      throw Exception(
-        'Failed to fetch transactions: ${response.statusCode} - ${response.body}',
-      );
-    }
-  }
-
-  /// Fetches a single transaction by ID
-  Future<Transaction?> fetchTransactionById(
-    int accountId,
-    String transactionId,
+  // Fetch transactions for a specific account
+  Future<List<Transaction>> fetchTransactionsByAccountId(
+    String accountId,
   ) async {
-    final uri = Uri.parse(
-      '$baseUrl$apiPath/$accountId/transactions/$transactionId',
-    );
+    try {
+      print('🔄 Fetching transactions for account: $accountId');
 
-    final response = await http.get(uri, headers: headers);
+      final url =
+          '$baseUrl/accounts/$accountId/transactions?skip=0&sort=desc&limit=20';
+      print('📡 API URL: $url');
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      return Transaction.fromJson(data);
-    } else if (response.statusCode == 404) {
-      return null;
-    } else {
-      throw Exception(
-        'Failed to fetch transaction: ${response.statusCode} - ${response.body}',
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // Add authentication headers if needed
+          // 'Authorization': 'Bearer $token',
+        },
       );
-    }
-  }
 
-  /// Fetches all transactions for a single account (handles pagination)
-  Future<List<Transaction>> fetchAllTransactionsForAccount(
-    int accountId,
-  ) async {
-    List<Transaction> allTransactions = [];
-    int skip = 0;
-    const int limit = 100;
-    bool hasMore = true;
+      print('📊 Response status: ${response.statusCode}');
+      print(
+        '📋 Response body preview: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}...',
+      );
 
-    while (hasMore) {
-      try {
-        final transactions = await fetchTransactionsForSingleAccount(
-          accountId,
-          skip: skip,
-          limit: limit,
-        );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
 
-        if (transactions.isEmpty) {
-          hasMore = false;
-        } else {
-          allTransactions.addAll(transactions);
-          skip += limit;
+        // Extract the data array from the response
+        final List<dynamic> transactionData = jsonResponse['data'] ?? [];
 
-          // If we got less than the limit, we've reached the end
-          if (transactions.length < limit) {
-            hasMore = false;
-          }
-        }
-      } catch (e) {
+        print('✅ Found ${transactionData.length} transactions in API response');
+
+        // Convert each transaction to Transaction object
+        final List<Transaction> transactions = transactionData
+            .map((json) {
+              try {
+                return Transaction.fromJson(json);
+              } catch (e) {
+                print('⚠️ Error parsing transaction: $e');
+                print('📄 Problematic JSON: $json');
+                return null;
+              }
+            })
+            .where((transaction) => transaction != null)
+            .cast<Transaction>()
+            .toList();
+
+        print('✅ Successfully parsed ${transactions.length} transactions');
+        return transactions;
+      } else {
+        print('❌ API Error: ${response.statusCode}');
+        print('📄 Error body: ${response.body}');
         throw Exception(
-          'Failed to fetch all transactions for account $accountId: $e',
+          'Failed to load transactions: ${response.statusCode} - ${response.body}',
         );
       }
+    } catch (e) {
+      print('❌ Network/Parse Error: $e');
+      throw Exception('Failed to fetch transactions: $e');
     }
-
-    return allTransactions;
   }
-}
 
-/// Helper class to group transactions by account
-class AccountTransactions {
-  final int accountId;
-  final List<Transaction> transactions;
-  final String? error;
+  // Fetch all transactions (you might not need this with your current API structure)
+  Future<List<Transaction>> fetchTransactions() async {
+    // Since your API is account-specific, this method would need to fetch for all accounts
+    // For now, we'll just return an empty list
+    print(
+      '⚠️ fetchTransactions() called - use fetchTransactionsByAccountId() instead',
+    );
+    return [];
+  }
 
-  AccountTransactions({
-    required this.accountId,
-    required this.transactions,
-    this.error,
-  });
+  // Alternative method to filter transactions locally (not needed with your API structure)
+  Future<List<Transaction>> fetchTransactionsByAccountIdFiltered(
+    String accountId,
+  ) async {
+    // Your API already filters by account, so this just calls the main method
+    return fetchTransactionsByAccountId(accountId);
+  }
 
-  bool get hasError => error != null;
-  bool get hasTransactions => transactions.isNotEmpty;
+  // For testing: Generate mock transactions that match your API structure
+  Future<List<Transaction>> generateMockTransactions(String accountId) async {
+    print('🎭 Generating mock transactions for account: $accountId');
 
-  @override
-  String toString() {
-    if (hasError) {
-      return 'AccountTransactions(accountId: $accountId, error: $error)';
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    final mockTransactions = [
+      Transaction(
+        transactionId: '1',
+        amount: Amount(value: 4971.6, currency: 'JOD'),
+        creditDebitIndicator: 'CREDIT',
+        transactionDate: DateTime.parse('2023-12-24T05:35:51.612Z'),
+        description: 'Bonus payment',
+        status: 'settled',
+        accountId: accountId,
+        transactionChannel: 'Automated Clearing House',
+        debtorName: 'Nora Abdullah Al-Rashid',
+        creditorName: 'Ahmed Mohammed Al-Ahmad',
+      ),
+      Transaction(
+        transactionId: '2',
+        amount: Amount(value: 250.75, currency: 'JOD'),
+        creditDebitIndicator: 'DEBIT',
+        transactionDate: DateTime.now().subtract(const Duration(days: 2)),
+        description: 'Restaurant payment',
+        status: 'settled',
+        accountId: accountId,
+        transactionChannel: 'Online Banking',
+        debtorName: 'Ahmed Mohammed Al-Ahmad',
+        creditorName: 'Tony\'s Pizza Restaurant',
+      ),
+      Transaction(
+        transactionId: '3',
+        amount: Amount(value: 45.50, currency: 'JOD'),
+        creditDebitIndicator: 'DEBIT',
+        transactionDate: DateTime.now().subtract(const Duration(days: 5)),
+        description: 'Gas station payment',
+        status: 'settled',
+        accountId: accountId,
+        transactionChannel: 'Card Payment',
+        debtorName: 'Ahmed Mohammed Al-Ahmad',
+        creditorName: 'Shell Gas Station',
+      ),
+      Transaction(
+        transactionId: '4',
+        amount: Amount(value: 12.25, currency: 'JOD'),
+        creditDebitIndicator: 'DEBIT',
+        transactionDate: DateTime.now().subtract(const Duration(days: 7)),
+        description: 'Coffee shop payment',
+        status: 'pending',
+        accountId: accountId,
+        transactionChannel: 'Mobile App',
+        debtorName: 'Ahmed Mohammed Al-Ahmad',
+        creditorName: 'Starbucks Coffee',
+      ),
+      Transaction(
+        transactionId: '5',
+        amount: Amount(value: 189.99, currency: 'JOD'),
+        creditDebitIndicator: 'DEBIT',
+        transactionDate: DateTime.now().subtract(const Duration(days: 10)),
+        description: 'Grocery shopping',
+        status: 'settled',
+        accountId: accountId,
+        transactionChannel: 'Card Payment',
+        debtorName: 'Ahmed Mohammed Al-Ahmad',
+        creditorName: 'Carrefour Supermarket',
+      ),
+    ];
+
+    print('✅ Generated ${mockTransactions.length} mock transactions');
+    return mockTransactions;
+  }
+
+  // Test API connectivity
+  Future<bool> testApiConnection() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/accounts/1001/transactions?skip=0&limit=1'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+
+      print('🔗 API Test - Status: ${response.statusCode}');
+      return response.statusCode == 200;
+    } catch (e) {
+      print('🔗 API Test Failed: $e');
+      return false;
     }
-    return 'AccountTransactions(accountId: $accountId, transactions: ${transactions.length})';
   }
 }

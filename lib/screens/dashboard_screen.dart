@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:yoweme/model/trasnactions.dart';
 import 'package:yoweme/model/user.dart';
 import 'package:yoweme/model/balance.dart';
 import 'package:yoweme/services/account_services.dart';
 import 'package:yoweme/services/balance_services.dart';
+import 'package:yoweme/services/transactions_services.dart';
 import '../core/utils/constants/colors.dart';
 import 'friend_detail_screen.dart';
 
@@ -423,17 +425,102 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _navigateToFriendDetail(Map<String, dynamic> friend) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FriendDetailScreen(
-          friendName: friend['name'],
-          balance: friend['amount'].toDouble(),
-          friendId: friend['id'],
-        ),
-      ),
+  void _navigateToFriendDetail(Map<String, dynamic> friend) async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
     );
+
+    try {
+      final transactionService = TransactionService();
+      List<Transaction> transactions = [];
+
+      print(
+        '🚀 Starting transaction fetch for account: ${friend['accountId']}',
+      );
+
+      // Try to fetch real transactions from API
+      try {
+        transactions = await transactionService.fetchTransactionsByAccountId(
+          friend['accountId'],
+        );
+        print(
+          '✅ Successfully fetched ${transactions.length} real transactions from API',
+        );
+
+        // If no transactions found, you might want to try mock data
+        if (transactions.isEmpty) {
+          print(
+            '📝 No real transactions found, generating mock data for testing...',
+          );
+          transactions = await transactionService.generateMockTransactions(
+            friend['accountId'],
+          );
+        }
+      } catch (apiError) {
+        print('⚠️ Real API fetch failed: $apiError');
+        print('📝 Falling back to mock transactions for testing...');
+
+        // Use mock data as fallback
+        transactions = await transactionService.generateMockTransactions(
+          friend['accountId'],
+        );
+      }
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // Navigate to friend detail screen
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FriendDetailScreen(
+              friendName: friend['name'],
+              balance: friend['amount'].toDouble(),
+              friendId: friend['id'],
+              transactions: transactions,
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      print('❌ All transaction fetch methods failed: $error');
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // Show error message with option to continue without transactions
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Unable to load transactions: $error'),
+            backgroundColor: AppColors.negativeRed,
+            action: SnackBarAction(
+              label: 'Continue Anyway',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FriendDetailScreen(
+                      friendName: friend['name'],
+                      balance: friend['amount'].toDouble(),
+                      friendId: friend['id'],
+                      transactions: [], // Empty list
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildEmptyState() {

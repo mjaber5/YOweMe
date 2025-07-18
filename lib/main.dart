@@ -5,7 +5,6 @@ import 'package:yoweme/core/utils/theme/theme.dart';
 import 'package:yoweme/core/utils/constants/colors.dart';
 import 'package:yoweme/feature/settings/profile.dart';
 import 'package:yoweme/screens/dashboard_screen.dart';
-import 'package:yoweme/screens/friend_detail_screen.dart';
 import 'package:yoweme/screens/add_expense_screen.dart';
 import 'package:yoweme/screens/ai_insights_screen.dart';
 import 'package:yoweme/screens/notification_screen.dart';
@@ -79,11 +78,7 @@ class _YOweMeAppState extends State<YOweMeApp> {
         '/main': (context) =>
             MainNavigationScreen(onThemeChanged: _changeTheme),
         '/dashboard': (context) => const DashboardScreen(),
-        '/friend-detail': (context) => const FriendDetailScreen(
-          friendName: 'Peter Clarkson',
-          balance: -154.68,
-          friendId: '1',
-        ),
+        // Removed the problematic friend-detail route since it's handled programmatically
         '/add-expense': (context) => const AddExpenseScreen(),
         '/ai-insights': (context) => const AIInsightsScreen(),
         '/notifications': (context) => const NotificationsScreen(),

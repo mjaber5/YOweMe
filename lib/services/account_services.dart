@@ -24,17 +24,7 @@ class ApiServiceAccounts {
       );
     }
 
-    final customerIDs = [
-      ...generateCustomerIDs('IND_CUST_', 1, 8),
-      ...generateCustomerIDs('IND_CUST_', 9, 14),
-      ...generateCustomerIDs('IND_CUST_', 15, 18),
-      ...generateCustomerIDs('IND_CUST_', 19, 22),
-      ...generateCustomerIDs('CORP_CUST_', 1, 4),
-      ...generateCustomerIDs('CORP_CUST_', 5, 7),
-      ...generateCustomerIDs('CORP_CUST_', 8, 9),
-      ...generateCustomerIDs('BUS_CUST_', 1, 4),
-      ...generateCustomerIDs('BUS_CUST_', 5, 7),
-    ];
+    final customerIDs = [...generateCustomerIDs('IND_CUST_', 1, 8)];
 
     int getAccountId(int index) => 1000 + index + 1;
 
