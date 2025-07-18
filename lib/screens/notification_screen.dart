@@ -180,7 +180,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.getCardColor(context),
+      backgroundColor: AppColors.getBackgroundColor(context),
       elevation: 0,
       shadowColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,

@@ -93,7 +93,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Friends',
+                    'Dashboard',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,

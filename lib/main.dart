@@ -237,7 +237,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: AppColors.getCardColor(context),
+        backgroundColor: AppColors.getBackgroundColor(context),
         elevation: 0,
         title: Text(
           'Profile',
@@ -265,39 +265,41 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryTeal,
-                      borderRadius: BorderRadius.circular(40),
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryTeal,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      child: const Icon(
+                        Icons.person,
+                        size: 40,
+                        color: Colors.white,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.person,
-                      size: 40,
-                      color: Colors.white,
+                    const SizedBox(height: 16),
+                    Text(
+                      'John Doe',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.getPrimaryTextColor(context),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'John Doe',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.getPrimaryTextColor(context),
+                    const SizedBox(height: 4),
+                    Text(
+                      'john.doe@example.com',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.getSecondaryTextColor(context),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'john.doe@example.com',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.getSecondaryTextColor(context),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 

@@ -56,7 +56,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: AppColors.getCardColor(context),
+        backgroundColor: AppColors.getBackgroundColor(context),
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.getPrimaryTextColor(context)),
         title: Text(
