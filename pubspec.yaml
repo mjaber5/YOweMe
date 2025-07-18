@@ -1,8 +1,6 @@
-
 name: yoweme
-description: "A new Flutter project."
+description: "YOweMe - Smart Expense Splitting App with AI-powered insights"
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -11,30 +9,50 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
-  http: ^1.4.0
-  provider: ^6.1.5
-  shared_preferences: ^2.5.3
-  fl_chart: ^1.0.0
+  
+  # Localization
+  flutter_localizations:
+    sdk: flutter
   intl: ^0.20.2
+  
+  # State Management
+  provider: ^6.1.5
+  
+  # UI Components
+  cupertino_icons: ^1.0.8
   lucide_icons: ^0.257.0
-  google_generative_ai: ^0.4.7
-  flutter_dotenv: ^5.2.1
-  image_picker: ^1.1.2
-  pdf: ^3.11.3
-  printing: ^5.14.2
-  share_plus: ^11.0.0
-  path_provider: ^2.1.5
-  fluttertoast: ^8.2.12
-  local_auth: ^2.3.0
+  fl_chart: ^1.0.0
+  
+  # Networking & APIs
+  http: ^1.4.0
   dio: ^5.7.0
   connectivity_plus: ^6.0.5
   dio_cache_interceptor: ^3.5.0
   pretty_dio_logger: ^1.4.0
-  json_annotation: ^4.9.0
-  encrypt: ^5.0.3
-  flutter_secure_storage: ^9.2.4
   retry: ^3.1.2
+  
+  # Storage & Preferences
+  shared_preferences: ^2.5.3
+  flutter_secure_storage: ^9.2.4
+  path_provider: ^2.1.5
+  
+  # AI & Machine Learning
+  google_generative_ai: ^0.4.7
+  
+  # Media & Files
+  image_picker: ^1.1.2
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  share_plus: ^11.0.0
+  
+  # Authentication & Security
+  local_auth: ^2.3.0
+  encrypt: ^5.0.3
+  
+  # Utilities
+  flutter_dotenv: ^5.2.1
+  fluttertoast: ^8.2.12
+  json_annotation: ^4.9.0
 
 dev_dependencies:
   flutter_test:
@@ -43,5 +61,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true  # Enable localization generation
+  
   assets:
     - .env
+    - assets/images/
+    - assets/icons/
+  
+ 

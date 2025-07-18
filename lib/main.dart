@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yoweme/core/utils/theme/theme.dart';
 import 'package:yoweme/core/utils/constants/colors.dart';
 import 'package:yoweme/feature/settings/profile.dart';
+import 'package:yoweme/l10n/app_localizations.dart';
+import 'package:yoweme/providers/locale_provider.dart';
+import 'package:yoweme/providers/theme_provider.dart';
 import 'package:yoweme/screens/dashboard_screen.dart';
+import 'package:yoweme/screens/friend_detail_screen.dart';
 import 'package:yoweme/screens/add_expense_screen.dart';
 import 'package:yoweme/screens/ai_insights_screen.dart';
 import 'package:yoweme/screens/notification_screen.dart';
@@ -42,55 +48,64 @@ void main() async {
   runApp(YOweMeApp(isLoggedIn: isLoggedIn));
 }
 
-class YOweMeApp extends StatefulWidget {
+class YOweMeApp extends StatelessWidget {
   final bool isLoggedIn;
 
   const YOweMeApp({super.key, required this.isLoggedIn});
 
   @override
-  State<YOweMeApp> createState() => _YOweMeAppState();
-}
-
-class _YOweMeAppState extends State<YOweMeApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  void _changeTheme(ThemeMode themeMode) {
-    setState(() {
-      _themeMode = themeMode;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'YOweMe - Smart Expense Splitting',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: _themeMode,
-      home: widget.isLoggedIn
-          ? const OTPScreen()
-          : MainNavigationScreen(onThemeChanged: _changeTheme),
-      debugShowCheckedModeBanner: false,
-      routes: {
-        '/otp': (context) => const OTPScreen(),
-        '/otp-verification': (context) =>
-            const OTPVerificationScreen(phoneNumber: ''),
-        '/main': (context) =>
-            MainNavigationScreen(onThemeChanged: _changeTheme),
-        '/dashboard': (context) => const DashboardScreen(),
-        // Removed the problematic friend-detail route since it's handled programmatically
-        '/add-expense': (context) => const AddExpenseScreen(),
-        '/ai-insights': (context) => const AIInsightsScreen(),
-        '/notifications': (context) => const NotificationsScreen(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+      ],
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeProvider, localeProvider, child) {
+          return MaterialApp(
+            title: 'YOweMe - Smart Expense Splitting',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            locale: localeProvider.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('ar'),
+            ],
+            home: isLoggedIn
+                ? const OTPScreen()
+                : const MainNavigationScreen(),
+            debugShowCheckedModeBanner: false,
+            routes: {
+              '/otp': (context) => const OTPScreen(),
+              '/otp-verification': (context) =>
+                  const OTPVerificationScreen(phoneNumber: ''),
+              '/main': (context) => const MainNavigationScreen(),
+              '/dashboard': (context) => const DashboardScreen(),
+              '/friend-detail': (context) => const FriendDetailScreen(
+                friendName: 'Peter Clarkson',
+                balance: -154.68,
+                friendId: '1', transactions: [],
+              ),
+              '/add-expense': (context) => const AddExpenseScreen(),
+              '/ai-insights': (context) => const AIInsightsScreen(),
+              '/notifications': (context) => const NotificationsScreen(),
+            },
+          );
+        },
+      ),
     );
   }
 }
 
 class MainNavigationScreen extends StatefulWidget {
-  final Function(ThemeMode) onThemeChanged;
-
-  const MainNavigationScreen({super.key, required this.onThemeChanged});
+  const MainNavigationScreen({super.key});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -104,7 +119,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const AIInsightsScreen(),
     const AddExpenseScreen(),
     const NotificationsScreen(),
-    ProfileScreen(onThemeChanged: widget.onThemeChanged),
+    const ProfileScreen(),
   ];
 
   @override
