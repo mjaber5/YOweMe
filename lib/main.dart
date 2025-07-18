@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yoweme/core/utils/theme/theme.dart';
 import 'package:yoweme/screens/dashboard_screen.dart';
 import 'package:yoweme/screens/friend_detail_screen.dart';
 import 'package:yoweme/screens/add_expense_screen.dart';
 import 'package:yoweme/screens/ai_insights_screen.dart';
 import 'package:yoweme/screens/notification_screen.dart';
+import 'package:yoweme/screens/otp_screen.dart';
+import 'package:yoweme/screens/otp_verification_screen.dart';
 import 'package:yoweme/services/gemini_service.dart';
 
 void main() async {
@@ -30,11 +33,17 @@ void main() async {
     // Continue without AI features for now
   }
 
-  runApp(const YOweMeApp());
+  // Check login state
+  final prefs = await SharedPreferences.getInstance();
+  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  runApp(YOweMeApp(isLoggedIn: isLoggedIn));
 }
 
 class YOweMeApp extends StatelessWidget {
-  const YOweMeApp({super.key});
+  final bool isLoggedIn;
+
+  const YOweMeApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +52,13 @@ class YOweMeApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: const MainNavigationScreen(),
+      home: isLoggedIn ? const MainNavigationScreen() : const OTPScreen(),
       debugShowCheckedModeBanner: false,
       routes: {
+        '/otp': (context) => const OTPScreen(),
+        '/otp-verification': (context) =>
+            const OTPVerificationScreen(phoneNumber: ''),
+        '/main': (context) => const MainNavigationScreen(),
         '/dashboard': (context) => const DashboardScreen(),
         '/friend-detail': (context) => const FriendDetailScreen(
           friendName: 'Peter Clarkson',
@@ -54,6 +67,7 @@ class YOweMeApp extends StatelessWidget {
         ),
         '/add-expense': (context) => const AddExpenseScreen(),
         '/ai-insights': (context) => const AIInsightsScreen(),
+        '/notifications': (context) => const NotificationsScreen(),
       },
     );
   }
