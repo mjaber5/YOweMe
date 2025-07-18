@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yoweme/core/utils/theme/theme.dart';
+import 'package:yoweme/core/utils/constants/colors.dart';
 import 'package:yoweme/screens/dashboard_screen.dart';
 import 'package:yoweme/screens/friend_detail_screen.dart';
 import 'package:yoweme/screens/add_expense_screen.dart';
@@ -21,11 +22,12 @@ void main() async {
 
     // Initialize Gemini AI only if API key is available
     if (dotenv.env['GEMINI_API_KEY'] != null &&
-        dotenv.env['GEMINI_API_KEY']!.isNotEmpty) {
+        dotenv.env['GEMINI_API_KEY']!.isNotEmpty &&
+        dotenv.env['GEMINI_API_KEY']!.startsWith('AIza')) {
       GeminiService.initialize();
       print("✅ Gemini AI initialized successfully");
     } else {
-      print("⚠️ Gemini API key not found - AI features will be disabled");
+      print("⚠️ Invalid Gemini API key - AI features will be disabled");
     }
   } catch (e) {
     print("⚠️ .env file not found - creating one for you...");
@@ -40,10 +42,23 @@ void main() async {
   runApp(YOweMeApp(isLoggedIn: isLoggedIn));
 }
 
-class YOweMeApp extends StatelessWidget {
+class YOweMeApp extends StatefulWidget {
   final bool isLoggedIn;
 
   const YOweMeApp({super.key, required this.isLoggedIn});
+
+  @override
+  State<YOweMeApp> createState() => _YOweMeAppState();
+}
+
+class _YOweMeAppState extends State<YOweMeApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void _changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +66,17 @@ class YOweMeApp extends StatelessWidget {
       title: 'YOweMe - Smart Expense Splitting',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: isLoggedIn ? const MainNavigationScreen() : const OTPScreen(),
+      themeMode: _themeMode,
+      home: widget.isLoggedIn
+          ? MainNavigationScreen(onThemeChanged: _changeTheme)
+          : const OTPScreen(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/otp': (context) => const OTPScreen(),
         '/otp-verification': (context) =>
             const OTPVerificationScreen(phoneNumber: ''),
-        '/main': (context) => const MainNavigationScreen(),
+        '/main': (context) =>
+            MainNavigationScreen(onThemeChanged: _changeTheme),
         '/dashboard': (context) => const DashboardScreen(),
         '/friend-detail': (context) => const FriendDetailScreen(
           friendName: 'Peter Clarkson',
@@ -74,7 +92,9 @@ class YOweMeApp extends StatelessWidget {
 }
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  final Function(ThemeMode) onThemeChanged;
+
+  const MainNavigationScreen({super.key, required this.onThemeChanged});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -83,12 +103,12 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
+  List<Widget> get _screens => [
     const DashboardScreen(),
     const AIInsightsScreen(),
     const AddExpenseScreen(),
     const NotificationsScreen(),
-    const PlaceholderScreen(title: 'Profile'),
+    ProfileScreen(onThemeChanged: widget.onThemeChanged),
   ];
 
   @override
@@ -96,7 +116,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(color: Colors.white),
+        decoration: BoxDecoration(
+          color: AppColors.getCardColor(context),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.getShadowLight(context),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -154,8 +183,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             Icon(
               isActive ? activeIcon : icon,
               color: isActive
-                  ? const Color(0xFF2C5F5A)
-                  : const Color(0xFF6B7280),
+                  ? AppColors.primaryTeal
+                  : AppColors.getSecondaryTextColor(context),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -164,8 +193,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               style: TextStyle(
                 fontSize: 12,
                 color: isActive
-                    ? const Color(0xFF2C5F5A)
-                    : const Color(0xFF6B7280),
+                    ? AppColors.primaryTeal
+                    : AppColors.getSecondaryTextColor(context),
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
@@ -182,12 +211,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         width: 56,
         height: 56,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF2C5F5A), Color(0xFF1E4A43)],
-          ),
+          gradient: AppColors.getPrimaryGradient(context),
           borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryTeal.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
@@ -195,59 +227,162 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-class PlaceholderScreen extends StatelessWidget {
-  final String title;
+class ProfileScreen extends StatelessWidget {
+  final Function(ThemeMode) onThemeChanged;
 
-  const PlaceholderScreen({super.key, required this.title});
+  const ProfileScreen({super.key, required this.onThemeChanged});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.getCardColor(context),
         elevation: 0,
         title: Text(
-          title,
-          style: const TextStyle(
-            color: Color(0xFF1F2937),
+          'Profile',
+          style: TextStyle(
+            color: AppColors.getPrimaryTextColor(context),
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
-      body: Center(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Profile Info Card
             Container(
-              width: 120,
-              height: 120,
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
-                borderRadius: BorderRadius.circular(60),
+                color: AppColors.getCardColor(context),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.getShadowLight(context),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Icon(
-                Icons.construction,
-                size: 48,
-                color: Color(0xFF6B7280),
+              child: Column(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryTeal,
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: const Icon(
+                      Icons.person,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'John Doe',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.getPrimaryTextColor(context),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'john.doe@example.com',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.getSecondaryTextColor(context),
+                    ),
+                  ),
+                ],
               ),
             ),
+
             const SizedBox(height: 24),
-            Text(
-              '$title Screen',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1F2937),
+
+            // Theme Selection Card
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.getCardColor(context),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.getShadowLight(context),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Coming soon...',
-              style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Theme',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.getPrimaryTextColor(context),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildThemeOption(
+                    context,
+                    'System',
+                    'Use device theme',
+                    Icons.smartphone,
+                    () => onThemeChanged(ThemeMode.system),
+                  ),
+                  _buildThemeOption(
+                    context,
+                    'Light',
+                    'Light theme',
+                    Icons.light_mode,
+                    () => onThemeChanged(ThemeMode.light),
+                  ),
+                  _buildThemeOption(
+                    context,
+                    'Dark',
+                    'Dark theme',
+                    Icons.dark_mode,
+                    () => onThemeChanged(ThemeMode.dark),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOption(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return ListTile(
+      leading: Icon(icon, color: AppColors.primaryTeal),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: AppColors.getPrimaryTextColor(context),
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(color: AppColors.getSecondaryTextColor(context)),
+      ),
+      onTap: onTap,
+      trailing: Icon(
+        Icons.chevron_right,
+        color: AppColors.getSecondaryTextColor(context),
       ),
     );
   }

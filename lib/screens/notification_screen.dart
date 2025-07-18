@@ -1,4 +1,4 @@
-// lib/screens/notifications_screen.dart
+// lib/screens/notifications_screen.dart (Updated with theme support)
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -98,17 +98,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       'actionType': 'add_friend',
     },
     {
-      'id': '6',
-      'type': 'weekly_summary',
-      'category': 'Updates',
-      'title': 'Weekly Summary',
-      'message':
-          'You spent \$127.50 this week and saved \$23.00 compared to last week',
-      'time': DateTime.now().subtract(const Duration(days: 1)),
-      'isRead': true,
-      'actionType': 'view_summary',
-    },
-    {
       'id': '7',
       'type': 'settlement_complete',
       'category': 'Payments',
@@ -172,7 +161,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.getBackgroundColor(context),
       appBar: _buildAppBar(),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
@@ -197,7 +186,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.getCardColor(context),
       elevation: 0,
       shadowColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
@@ -207,12 +196,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Notifications',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.primaryText,
+                color: AppColors.getPrimaryTextColor(context),
               ),
             ),
             const SizedBox(width: 48), // Balance the action button
@@ -223,8 +212,15 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         Container(
           margin: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: AppColors.getCardColor(context),
             borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.getShadowLight(context),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: IconButton(
             onPressed: _markAllAsRead,
@@ -260,13 +256,24 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primaryTeal : Colors.white,
+                  color: isSelected
+                      ? AppColors.primaryTeal
+                      : AppColors.getCardColor(context),
                   borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.getShadowLight(context),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Text(
                   filter,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.primaryText,
+                    color: isSelected
+                        ? Colors.white
+                        : AppColors.getPrimaryTextColor(context),
                     fontSize: 16,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   ),
@@ -306,9 +313,15 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   Widget _buildNotificationItem(Map<String, dynamic> notification) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(20),
-
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
         border: !notification['isRead']
             ? Border.all(
                 color: AppColors.primaryTeal.withOpacity(0.3),
@@ -344,7 +357,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                                     fontWeight: notification['isRead']
                                         ? FontWeight.w600
                                         : FontWeight.bold,
-                                    color: AppColors.primaryText,
+                                    color: AppColors.getPrimaryTextColor(
+                                      context,
+                                    ),
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -354,7 +369,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                                 _formatTime(notification['time']),
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.secondaryText,
+                                  color: AppColors.getSecondaryTextColor(
+                                    context,
+                                  ),
                                 ),
                               ),
                             ],
@@ -364,7 +381,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                             notification['message'],
                             style: TextStyle(
                               fontSize: 16,
-                              color: AppColors.secondaryText,
+                              color: AppColors.getSecondaryTextColor(context),
                               height: 1.4,
                             ),
                             maxLines: 2,
@@ -640,22 +657,22 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             width: 140,
             height: 140,
             decoration: BoxDecoration(
-              color: AppColors.surfaceGray,
+              color: AppColors.getSurfaceColor(context),
               borderRadius: BorderRadius.circular(70),
             ),
             child: Icon(
               LucideIcons.bell,
               size: 56,
-              color: AppColors.secondaryText,
+              color: AppColors.getSecondaryTextColor(context),
             ),
           ),
           const SizedBox(height: 32),
           Text(
             'No ${_selectedFilter.toLowerCase()} notifications',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w600,
-              color: AppColors.primaryText,
+              color: AppColors.getPrimaryTextColor(context),
             ),
           ),
           const SizedBox(height: 12),
@@ -663,7 +680,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             'You\'re all caught up! Check back later for updates.',
             style: TextStyle(
               fontSize: 16,
-              color: AppColors.secondaryText,
+              color: AppColors.getSecondaryTextColor(context),
               height: 1.4,
             ),
             textAlign: TextAlign.center,

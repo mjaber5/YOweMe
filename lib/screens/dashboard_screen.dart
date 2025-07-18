@@ -1,4 +1,4 @@
-// lib/screens/dashboard_screen.dart (Updated with navigation)
+// lib/screens/dashboard_screen.dart (Updated with theme support)
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../core/utils/constants/colors.dart';
@@ -83,7 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightGray,
+      backgroundColor: AppColors.getBackgroundColor(context),
       body: SafeArea(
         child: Column(
           children: [
@@ -92,12 +92,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Friends',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primaryText,
+                      color: AppColors.getPrimaryTextColor(context),
                     ),
                   ),
                   const SizedBox(width: 48), // Balance the plus button
@@ -110,11 +110,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: AppColors.getCardColor(context),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadowLight,
+                    color: AppColors.getShadowLight(context),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -123,11 +123,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Balance',
                     style: TextStyle(
                       fontSize: 16,
-                      color: AppColors.secondaryText,
+                      color: AppColors.getSecondaryTextColor(context),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -148,11 +148,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Overall',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.secondaryText,
+                                color: AppColors.getSecondaryTextColor(context),
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -173,11 +173,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'I owe',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.secondaryText,
+                                color: AppColors.getSecondaryTextColor(context),
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -196,11 +196,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Owes me',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.secondaryText,
+                                color: AppColors.getSecondaryTextColor(context),
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -251,8 +251,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: AppColors.getCardColor(context),
           borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.getShadowLight(context),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -285,18 +292,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   Text(
                     friend['name'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primaryText,
+                      color: AppColors.getPrimaryTextColor(context),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     friend['date'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.secondaryText,
+                      color: AppColors.getSecondaryTextColor(context),
                     ),
                   ),
                 ],
@@ -331,10 +338,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(
+                    Icon(
                       LucideIcons.chevronRight,
                       size: 16,
-                      color: AppColors.secondaryText,
+                      color: AppColors.getSecondaryTextColor(context),
                     ),
                   ],
                 ),
@@ -367,28 +374,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
           width: 120,
           height: 120,
           decoration: BoxDecoration(
-            color: AppColors.surfaceGray,
+            color: AppColors.getSurfaceColor(context),
             borderRadius: BorderRadius.circular(60),
           ),
-          child: const Icon(
+          child: Icon(
             LucideIcons.users,
             size: 48,
-            color: AppColors.secondaryText,
+            color: AppColors.getSecondaryTextColor(context),
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
+        Text(
           'No friends found',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: AppColors.primaryText,
+            color: AppColors.getPrimaryTextColor(context),
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Add friends to start splitting expenses',
-          style: TextStyle(fontSize: 14, color: AppColors.secondaryText),
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.getSecondaryTextColor(context),
+          ),
         ),
         const SizedBox(height: 32),
         ElevatedButton(

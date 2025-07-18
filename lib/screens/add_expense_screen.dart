@@ -1,4 +1,4 @@
-// lib/screens/add_expense_screen.dart
+// lib/screens/add_expense_screen.dart (Updated with theme support)
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -54,21 +54,24 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightGray,
+      backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.getCardColor(context),
         elevation: 0,
-
-        title: const Text(
+        iconTheme: IconThemeData(color: AppColors.getPrimaryTextColor(context)),
+        title: Text(
           'Add Expense',
           style: TextStyle(
-            color: AppColors.primaryText,
+            color: AppColors.getPrimaryTextColor(context),
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.camera, color: AppColors.primaryText),
+            icon: Icon(
+              LucideIcons.camera,
+              color: AppColors.getPrimaryTextColor(context),
+            ),
             onPressed: _pickReceiptImage,
           ),
         ],
@@ -88,9 +91,35 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 title: 'Description',
                 child: TextFormField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(
+                  style: TextStyle(
+                    color: AppColors.getPrimaryTextColor(context),
+                  ),
+                  decoration: InputDecoration(
                     hintText: 'Enter expense description',
-                    border: OutlineInputBorder(),
+                    hintStyle: TextStyle(
+                      color: AppColors.getLightTextColor(context),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: AppColors.getSurfaceColor(context),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: AppColors.getSurfaceColor(context),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: AppColors.primaryTeal,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: AppColors.getCardColor(context),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -110,10 +139,39 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 child: TextFormField(
                   controller: _amountController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
+                  style: TextStyle(
+                    color: AppColors.getPrimaryTextColor(context),
+                  ),
+                  decoration: InputDecoration(
                     hintText: '0.00',
                     prefixText: '\$ ',
-                    border: OutlineInputBorder(),
+                    hintStyle: TextStyle(
+                      color: AppColors.getLightTextColor(context),
+                    ),
+                    prefixStyle: TextStyle(
+                      color: AppColors.getPrimaryTextColor(context),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: AppColors.getSurfaceColor(context),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: AppColors.getSurfaceColor(context),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: AppColors.primaryTeal,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: AppColors.getCardColor(context),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -162,6 +220,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: const BorderSide(color: AppColors.primaryTeal),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: const Text(
                         'Cancel',
@@ -178,6 +239,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         backgroundColor: AppColors.primaryTeal,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: const Text('Add Expense'),
                     ),
@@ -199,8 +263,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,10 +280,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primaryText,
+                  color: AppColors.getPrimaryTextColor(context),
                 ),
               ),
               if (_isAIProcessing && title == 'Category')
@@ -233,9 +304,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: AppColors.secondaryText,
+                color: AppColors.getSecondaryTextColor(context),
               ),
             ),
           ],
@@ -251,8 +322,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,16 +338,20 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Receipt Image',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primaryText,
+                  color: AppColors.getPrimaryTextColor(context),
                 ),
               ),
               IconButton(
-                icon: const Icon(LucideIcons.x, size: 20),
+                icon: Icon(
+                  LucideIcons.x,
+                  size: 20,
+                  color: AppColors.getSecondaryTextColor(context),
+                ),
                 onPressed: () => setState(() => _receiptImage = null),
               ),
             ],
@@ -279,7 +361,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             height: 120,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppColors.surfaceGray,
+              color: AppColors.getSurfaceColor(context),
               borderRadius: BorderRadius.circular(12),
               image: _receiptImage != null
                   ? DecorationImage(
@@ -289,10 +371,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   : null,
             ),
             child: _receiptImage == null
-                ? const Icon(
+                ? Icon(
                     LucideIcons.image,
                     size: 40,
-                    color: AppColors.secondaryText,
+                    color: AppColors.getSecondaryTextColor(context),
                   )
                 : null,
           ),
@@ -312,14 +394,18 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primaryTeal : AppColors.surfaceGray,
+              color: isSelected
+                  ? AppColors.primaryTeal
+                  : AppColors.getSurfaceColor(context),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               category,
               style: TextStyle(
                 fontSize: 14,
-                color: isSelected ? Colors.white : AppColors.primaryText,
+                color: isSelected
+                    ? Colors.white
+                    : AppColors.getPrimaryTextColor(context),
                 fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
               ),
             ),
@@ -350,12 +436,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               },
               activeColor: AppColors.primaryTeal,
             ),
-            const Text(
+            Text(
               'Select All Friends',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.primaryText,
+                color: AppColors.getPrimaryTextColor(context),
               ),
             ),
           ],
@@ -391,7 +477,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primaryTeal.withOpacity(0.1)
-                      : AppColors.surfaceGray,
+                      : AppColors.getSurfaceColor(context),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected
@@ -428,7 +514,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         fontSize: 12,
                         color: isSelected
                             ? AppColors.primaryTeal
-                            : AppColors.primaryText,
+                            : AppColors.getPrimaryTextColor(context),
                         fontWeight: isSelected
                             ? FontWeight.w600
                             : FontWeight.normal,
@@ -448,18 +534,25 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Split Options',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.primaryText,
+              color: AppColors.getPrimaryTextColor(context),
             ),
           ),
           const SizedBox(height: 16),
@@ -500,7 +593,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       decoration: BoxDecoration(
         color: isSelected
             ? AppColors.primaryTeal.withOpacity(0.1)
-            : AppColors.surfaceGray,
+            : AppColors.getSurfaceColor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSelected ? AppColors.primaryTeal : Colors.transparent,
@@ -510,7 +603,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         children: [
           Icon(
             icon,
-            color: isSelected ? AppColors.primaryTeal : AppColors.secondaryText,
+            color: isSelected
+                ? AppColors.primaryTeal
+                : AppColors.getSecondaryTextColor(context),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -524,15 +619,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     fontWeight: FontWeight.w600,
                     color: isSelected
                         ? AppColors.primaryTeal
-                        : AppColors.primaryText,
+                        : AppColors.getPrimaryTextColor(context),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.secondaryText,
+                    color: AppColors.getSecondaryTextColor(context),
                   ),
                 ),
               ],

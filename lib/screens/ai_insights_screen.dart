@@ -1,7 +1,14 @@
-// lib/screens/ai_insights_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:yoweme/model/expense.dart';
 import 'package:yoweme/model/user.dart';
 import '../core/utils/constants/colors.dart';
@@ -18,20 +25,121 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = false;
+  bool _isGeneratingPDF = false;
   Map<String, dynamic>? _insights;
   Map<String, dynamic>? _predictions;
+  Map<String, dynamic> _reportData = {};
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadAIInsights();
+    _generateReportData();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _generateReportData() {
+    _reportData = {
+      'summary': {
+        'totalExpenses': 1247.50,
+        'monthlyAverage': 982.30,
+        'topCategory': 'Food & Dining',
+        'mostActiveUser': 'Victor',
+        'changeFromLastMonth': 12.5,
+      },
+      'categories': [
+        {
+          'name': 'Food & Dining',
+          'amount': 425.30,
+          'percentage': 34,
+          'color': 'orange',
+        },
+        {
+          'name': 'Transportation',
+          'amount': 287.20,
+          'percentage': 23,
+          'color': 'blue',
+        },
+        {
+          'name': 'Entertainment',
+          'amount': 186.50,
+          'percentage': 15,
+          'color': 'purple',
+        },
+        {
+          'name': 'Shopping',
+          'amount': 149.60,
+          'percentage': 12,
+          'color': 'green',
+        },
+        {'name': 'Others', 'amount': 198.90, 'percentage': 16, 'color': 'grey'},
+      ],
+      'monthlyTrend': [
+        {'month': 'Jan', 'amount': 800.0},
+        {'month': 'Feb', 'amount': 950.0},
+        {'month': 'Mar', 'amount': 1200.0},
+        {'month': 'Apr', 'amount': 1100.0},
+        {'month': 'May', 'amount': 1300.0},
+        {'month': 'Jun', 'amount': 980.0},
+        {'month': 'Jul', 'amount': 1150.0},
+        {'month': 'Aug', 'amount': 1250.0},
+        {'month': 'Sep', 'amount': 1400.0},
+        {'month': 'Oct', 'amount': 1200.0},
+        {'month': 'Nov', 'amount': 1100.0},
+        {'month': 'Dec', 'amount': 1247.0},
+      ],
+      'insights': [
+        {
+          'type': 'alert',
+          'title': 'Spending Alert',
+          'description': 'You\'ve spent 23% more on dining this month',
+          'recommendation':
+              'Consider cooking at home more often to reduce dining expenses.',
+        },
+        {
+          'type': 'tip',
+          'title': 'Smart Tip',
+          'description':
+              'Consider using group transportation to save \$45/month',
+          'recommendation':
+              'Coordinate with friends for shared rides to reduce transportation costs.',
+        },
+        {
+          'type': 'achievement',
+          'title': 'Achievement',
+          'description': 'You saved \$120 compared to last month!',
+          'recommendation':
+              'Keep up the good work! Continue your current spending habits.',
+        },
+      ],
+      'predictions': [
+        {
+          'title': 'Next Month Forecast',
+          'amount': 1180.00,
+          'description': 'Based on your spending patterns',
+          'confidence': 85,
+        },
+        {
+          'title': 'Year-end Projection',
+          'amount': 14250.00,
+          'description': 'Estimated total annual expenses',
+          'confidence': 78,
+        },
+        {
+          'title': 'Savings Opportunity',
+          'amount': 324.00,
+          'description': 'Potential monthly savings identified',
+          'confidence': 92,
+        },
+      ],
+      'generatedAt': DateTime.now(),
+    };
   }
 
   Future<void> _loadAIInsights() async {
@@ -45,50 +153,65 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
         name: 'Current User',
         email: 'user@example.com',
         createdAt: DateTime.now(),
-      ); // Current user
+      );
       final List<User> mockFriends = []; // Friends list
 
-      // Call Gemini AI services
-      final insightsResult = await GeminiService.generateSpendingInsights(
-        mockExpenses, // Pass List<Expense>
-        mockUser, // Pass User
-        mockFriends,
-      );
+      // Simulate AI processing
+      await Future.delayed(const Duration(seconds: 2));
 
-      final predictionsResult = await GeminiService.predictFutureExpenses(
-        mockExpenses,
-      );
+      // Debug: Print monthlyTrend data types
+      print('Monthly Trend Data: ${_reportData['monthlyTrend']}');
+      for (var item in _reportData['monthlyTrend']) {
+        print(
+          'Month: ${item['month']}, Amount: ${item['amount']} (${item['amount'].runtimeType})',
+        );
+      }
 
       setState(() {
-        _insights = insightsResult;
-        _predictions = predictionsResult;
+        _insights = _reportData;
+        _predictions = _reportData;
         _isLoading = false;
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      // Handle error
+      _showErrorDialog('Failed to load AI insights. Please try again: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightGray,
+      backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.getCardColor(context),
         elevation: 0,
-        title: const Text(
+        iconTheme: IconThemeData(color: AppColors.getPrimaryTextColor(context)),
+        title: Text(
           'AI Insights',
           style: TextStyle(
-            color: AppColors.primaryText,
+            color: AppColors.getPrimaryTextColor(context),
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
+              LucideIcons.share,
+              color: AppColors.getPrimaryTextColor(context),
+            ),
+            onPressed: _shareReport,
+          ),
+          IconButton(
+            icon: Icon(
+              LucideIcons.download,
+              color: AppColors.getPrimaryTextColor(context),
+            ),
+            onPressed: _downloadPDF,
+          ),
+          IconButton(
+            icon: Icon(
               LucideIcons.refreshCw,
-              color: AppColors.primaryText,
+              color: AppColors.getPrimaryTextColor(context),
             ),
             onPressed: _loadAIInsights,
           ),
@@ -96,8 +219,9 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.primaryTeal,
-          unselectedLabelColor: AppColors.secondaryText,
+          unselectedLabelColor: AppColors.getSecondaryTextColor(context),
           indicatorColor: AppColors.primaryTeal,
+          dividerColor: AppColors.getSurfaceColor(context),
           tabs: const [
             Tab(text: 'Overview'),
             Tab(text: 'Predictions'),
@@ -119,15 +243,26 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
   }
 
   Widget _buildLoadingState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(color: AppColors.primaryTeal),
-          SizedBox(height: 16),
+          const CircularProgressIndicator(color: AppColors.primaryTeal),
+          const SizedBox(height: 16),
           Text(
             'AI is analyzing your expenses...',
-            style: TextStyle(fontSize: 16, color: AppColors.secondaryText),
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.getSecondaryTextColor(context),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'This may take a few moments',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.getLightTextColor(context),
+            ),
           ),
         ],
       ),
@@ -140,20 +275,109 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Spending Summary Card
+          _buildExecutiveSummaryCard(),
+          const SizedBox(height: 20),
           _buildSpendingSummaryCard(),
           const SizedBox(height: 20),
-
-          // Monthly Trend Chart
           _buildMonthlyTrendCard(),
           const SizedBox(height: 20),
-
-          // Category Breakdown
           _buildCategoryBreakdownCard(),
           const SizedBox(height: 20),
-
-          // Quick Insights
           _buildQuickInsightsCard(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExecutiveSummaryCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: AppColors.getPrimaryGradient(context),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowMedium(context),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  LucideIcons.brain,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Executive Summary',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'AI-powered financial insights',
+                      style: TextStyle(fontSize: 14, color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Key Findings',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildSummaryPoint('📈', 'Spending increased by 12.5% this month'),
+          _buildSummaryPoint(
+            '🍽️',
+            'Food & Dining is your top expense category',
+          ),
+          _buildSummaryPoint('💡', 'Potential savings of \$324 identified'),
+          _buildSummaryPoint('🎯', 'On track to meet annual budget goals'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryPoint(String emoji, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 16)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 14, color: Colors.white),
+            ),
+          ),
         ],
       ),
     );
@@ -163,8 +387,15 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,18 +415,17 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'Spending Overview',
+              Text(
+                'Financial Metrics',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primaryText,
+                  color: AppColors.getPrimaryTextColor(context),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-
           Row(
             children: [
               Expanded(
@@ -217,7 +447,6 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
             ],
           ),
           const SizedBox(height: 16),
-
           Row(
             children: [
               Expanded(
@@ -254,15 +483,18 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 12, color: AppColors.secondaryText),
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.getSecondaryTextColor(context),
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColors.primaryText,
+            color: AppColors.getPrimaryTextColor(context),
           ),
         ),
         const SizedBox(height: 2),
@@ -282,258 +514,378 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Monthly Spending Trend',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryText,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Monthly Spending Trend',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.getPrimaryTextColor(context),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '12 Months',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.success,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
-
           SizedBox(
-            height: 200,
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(show: false),
-                borderData: FlBorderData(show: false),
-                minX: 0,
-                maxX: 11,
-                minY: 0,
-                maxY: 1500,
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: [
-                      const FlSpot(0, 800),
-                      const FlSpot(1, 950),
-                      const FlSpot(2, 1200),
-                      const FlSpot(3, 1100),
-                      const FlSpot(4, 1300),
-                      const FlSpot(5, 980),
-                      const FlSpot(6, 1150),
-                      const FlSpot(7, 1250),
-                      const FlSpot(8, 1400),
-                      const FlSpot(9, 1200),
-                      const FlSpot(10, 1100),
-                      const FlSpot(11, 1247),
-                    ],
-                    isCurved: true,
-                    color: AppColors.primaryTeal,
-                    barWidth: 3,
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(show: false),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      color: AppColors.primaryTeal.withOpacity(0.1),
+            height: 300,
+            child:
+                _reportData['monthlyTrend'] == null ||
+                    _reportData['monthlyTrend'].isEmpty
+                ? const Center(child: Text('No data available'))
+                : LineChart(
+                    LineChartData(
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: true,
+                        horizontalInterval: 250,
+                        verticalInterval: 1,
+                        getDrawingHorizontalLine: (value) => FlLine(
+                          color: AppColors.getShadowLight(
+                            context,
+                          ).withOpacity(0.2),
+                          strokeWidth: 1,
+                        ),
+                        getDrawingVerticalLine: (value) => FlLine(
+                          color: AppColors.getShadowLight(
+                            context,
+                          ).withOpacity(0.2),
+                          strokeWidth: 1,
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 40,
+                            interval: 250,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                '\$${value.toInt()}',
+                                style: TextStyle(
+                                  color: AppColors.getSecondaryTextColor(
+                                    context,
+                                  ),
+                                  fontSize: 12,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: 1,
+                            getTitlesWidget: (value, meta) {
+                              final int index = value.toInt();
+                              if (index < 0 ||
+                                  index >= _reportData['monthlyTrend'].length) {
+                                return const Text('');
+                              }
+                              final month =
+                                  _reportData['monthlyTrend'][index]['month'];
+                              return Text(
+                                month,
+                                style: TextStyle(
+                                  color: AppColors.getSecondaryTextColor(
+                                    context,
+                                  ),
+                                  fontSize: 10,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: _buildChartSpots(),
+                          isCurved: true,
+                          color: AppColors.primaryTeal,
+                          barWidth: 3,
+                          dotData: FlDotData(show: true),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            color: AppColors.primaryTeal.withOpacity(0.1),
+                          ),
+                        ),
+                      ],
+                      minX: 0,
+                      maxX: (_reportData['monthlyTrend'].length - 1).toDouble(),
+                      minY: 0,
+                      maxY: 1500,
                     ),
                   ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
     );
+  }
+
+  // Add this helper method to safely create FlSpot objects
+  List<FlSpot> _buildChartSpots() {
+    final List<FlSpot> spots = [];
+
+    for (int i = 0; i < _reportData['monthlyTrend'].length; i++) {
+      final monthData = _reportData['monthlyTrend'][i];
+      final amount = monthData['amount'];
+
+      // Safely convert to double
+      double yValue = 0.0;
+      if (amount is num) {
+        yValue = amount.toDouble();
+      } else if (amount is String) {
+        yValue = double.tryParse(amount) ?? 0.0;
+      }
+
+      spots.add(FlSpot(i.toDouble(), yValue));
+    }
+
+    return spots;
   }
 
   Widget _buildCategoryBreakdownCard() {
-    final categories = [
-      {
-        'name': 'Food & Dining',
-        'amount': 425.30,
-        'percentage': 34,
-        'color': Colors.orange,
-      },
-      {
-        'name': 'Transportation',
-        'amount': 287.20,
-        'percentage': 23,
-        'color': Colors.blue,
-      },
-      {
-        'name': 'Entertainment',
-        'amount': 186.50,
-        'percentage': 15,
-        'color': Colors.purple,
-      },
-      {
-        'name': 'Shopping',
-        'amount': 149.60,
-        'percentage': 12,
-        'color': Colors.green,
-      },
-      {
-        'name': 'Others',
-        'amount': 198.90,
-        'percentage': 16,
-        'color': Colors.grey,
-      },
-    ];
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Spending by Category',
+          Text(
+            'Category Breakdown',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: AppColors.primaryText,
+              color: AppColors.getPrimaryTextColor(context),
             ),
           ),
-          const SizedBox(height: 20),
-
-          ...categories
-              .map((category) => _buildCategoryItem(category))
-              .toList(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryItem(Map<String, dynamic> category) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              color: category['color'],
-              borderRadius: BorderRadius.circular(6),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              category['name'],
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.primaryText,
+          SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+          SizedBox(
+            height: 200,
+            child: PieChart(
+              PieChartData(
+                sections: List.generate(_reportData['categories'].length, (
+                  index,
+                ) {
+                  final category = _reportData['categories'][index];
+                  return PieChartSectionData(
+                    color: _getCategoryColor(category['color']),
+                    value: category['percentage'].toDouble(),
+                    title: '${category['percentage']}%',
+                    radius: 80,
+                    titleStyle: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                }),
+                sectionsSpace: 2,
+                centerSpaceRadius: 40,
               ),
             ),
           ),
-          Text(
-            '\$${category['amount'].toStringAsFixed(2)}',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryText,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            '${category['percentage']}%',
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.secondaryText,
-            ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+          Wrap(
+            spacing: 16,
+            runSpacing: 8,
+            children: _reportData['categories'].map<Widget>((category) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: _getCategoryColor(category['color']),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${category['name']}: \$${category['amount']}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.getSecondaryTextColor(context),
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQuickInsightsCard() {
-    final insights = [
-      {
-        'title': 'Spending Alert',
-        'description': 'You\'ve spent 23% more on dining this month',
-        'icon': LucideIcons.alertTriangle,
-        'color': AppColors.warning,
-      },
-      {
-        'title': 'Smart Tip',
-        'description': 'Consider using group transportation to save \$45/month',
-        'icon': LucideIcons.lightbulb,
-        'color': AppColors.info,
-      },
-      {
-        'title': 'Achievement',
-        'description': 'You saved \$120 compared to last month!',
-        'icon': LucideIcons.trophy,
-        'color': AppColors.success,
-      },
-    ];
+  Color _getCategoryColor(String colorName) {
+    switch (colorName.toLowerCase()) {
+      case 'orange':
+        return Colors.orange;
+      case 'blue':
+        return Colors.blue;
+      case 'purple':
+        return Colors.purple;
+      case 'green':
+        return Colors.green;
+      case 'grey':
+        return Colors.grey;
+      default:
+        return Colors.black;
+    }
+  }
 
+  Widget _buildQuickInsightsCard() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'AI Insights',
+          Text(
+            'Quick Insights',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: AppColors.primaryText,
+              color: AppColors.getPrimaryTextColor(context),
             ),
           ),
           const SizedBox(height: 16),
-
-          ...insights.map((insight) => _buildInsightItem(insight)).toList(),
+          ..._reportData['insights'].map<Widget>((insight) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: _buildInsightItem(
+                insight['type'],
+                insight['title'],
+                insight['description'],
+                insight['recommendation'],
+              ),
+            );
+          }).toList(),
         ],
       ),
     );
   }
 
-  Widget _buildInsightItem(Map<String, dynamic> insight) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: insight['color'].withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: insight['color'].withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Icon(insight['icon'], color: insight['color'], size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  insight['title'],
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: insight['color'],
-                  ),
+  Widget _buildInsightItem(
+    String type,
+    String title,
+    String description,
+    String recommendation,
+  ) {
+    IconData icon;
+    Color color;
+    switch (type) {
+      case 'alert':
+        icon = LucideIcons.alertTriangle;
+        color = AppColors.negativeRed;
+        break;
+      case 'tip':
+        icon = LucideIcons.lightbulb;
+        color = AppColors.primaryTeal;
+        break;
+      case 'achievement':
+        icon = LucideIcons.trophy;
+        color = AppColors.positiveGreen;
+        break;
+      default:
+        icon = LucideIcons.info;
+        color = AppColors.neutralBlue;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.getPrimaryTextColor(context),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  insight['description'],
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.primaryText,
-                  ),
-                ),
-              ],
+              ),
             ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          description,
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.getSecondaryTextColor(context),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Recommendation: $recommendation',
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.getLightTextColor(context),
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
     );
   }
 
@@ -541,91 +893,78 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPredictionCard(
-            'Next Month Forecast',
-            '\$1,180.00',
-            'Based on your spending patterns',
-            LucideIcons.calendar,
-            AppColors.primaryTeal,
-          ),
-          const SizedBox(height: 16),
-          _buildPredictionCard(
-            'Year-end Projection',
-            '\$14,250.00',
-            'Estimated total annual expenses',
-            LucideIcons.trendingUp,
-            AppColors.neutralBlue,
-          ),
-          const SizedBox(height: 16),
-          _buildPredictionCard(
-            'Savings Opportunity',
-            '\$324.00',
-            'Potential monthly savings identified',
-            LucideIcons.piggyBank,
-            AppColors.success,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPredictionCard(
-    String title,
-    String amount,
-    String description,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryText,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  amount,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.secondaryText,
-                  ),
-                ),
-              ],
+          Text(
+            'Financial Predictions',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.getPrimaryTextColor(context),
             ),
           ),
+          const SizedBox(height: 20),
+          ..._reportData['predictions'].map<Widget>((prediction) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.getCardColor(context),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.getShadowLight(context),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          prediction['title'],
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.getPrimaryTextColor(context),
+                          ),
+                        ),
+                        Text(
+                          'Confidence: ${prediction['confidence']}%',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.getSecondaryTextColor(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '\$${prediction['amount'].toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryTeal,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      prediction['description'],
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.getSecondaryTextColor(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
         ],
       ),
     );
@@ -635,121 +974,276 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildReportOption(
-            'Monthly Report',
-            'Detailed breakdown of this month\'s expenses',
-            LucideIcons.fileText,
-            () => _generateReport('monthly'),
+          Text(
+            'Reports',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.getPrimaryTextColor(context),
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: _downloadPDF,
+            icon: const Icon(LucideIcons.download),
+            label: const Text('Download Full Report'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryTeal,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           ),
           const SizedBox(height: 16),
-          _buildReportOption(
-            'Quarterly Analysis',
-            'Comprehensive spending analysis for Q1 2024',
-            LucideIcons.barChart3,
-            () => _generateReport('quarterly'),
+          ElevatedButton.icon(
+            onPressed: _shareReport,
+            icon: const Icon(LucideIcons.share),
+            label: const Text('Share Report'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryTeal,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
-          _buildReportOption(
-            'Year-end Summary',
-            'Complete financial overview for 2024',
-            LucideIcons.calendar,
-            () => _generateReport('yearly'),
-          ),
-          const SizedBox(height: 16),
-          _buildReportOption(
-            'Custom Report',
-            'Generate report for specific date range',
-            LucideIcons.settings,
-            () => _generateReport('custom'),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.getCardColor(context),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.getShadowLight(context),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Report Details',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.getPrimaryTextColor(context),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Generated: ${_reportData['generatedAt'].toString().substring(0, 16)}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.getSecondaryTextColor(context),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Total Expenses: \$${(_reportData['summary']['totalExpenses'] as double).toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.getSecondaryTextColor(context),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Categories Analyzed: ${_reportData['categories'].length}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.getSecondaryTextColor(context),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildReportOption(
-    String title,
-    String description,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(16),
+  Future<void> _downloadPDF() async {
+    setState(() => _isGeneratingPDF = true);
+    try {
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(32),
+          build: (pw.Context context) {
+            return [
+              pw.Header(
+                level: 0,
+                child: pw.Text(
+                  'Financial Insights Report',
+                  style: pw.TextStyle(
+                    fontSize: 24,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Summary',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Bullet(
+                text:
+                    'Total Expenses: \$${(_reportData['summary']['totalExpenses'] as double).toStringAsFixed(2)}',
+              ),
+              pw.Bullet(
+                text:
+                    'Monthly Average: \$${(_reportData['summary']['monthlyAverage'] as double).toStringAsFixed(2)}',
+              ),
+              pw.Bullet(
+                text: 'Top Category: ${_reportData['summary']['topCategory']}',
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Insights',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              ..._reportData['insights'].map<pw.Widget>((insight) {
+                return pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 8),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        insight['title'],
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      ),
+                      pw.Text(insight['description']),
+                      pw.Text(
+                        'Recommendation: ${insight['recommendation']}',
+                        style: pw.TextStyle(fontStyle: pw.FontStyle.italic),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Predictions',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              ..._reportData['predictions'].map<pw.Widget>((prediction) {
+                return pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 8),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        prediction['title'],
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      ),
+                      pw.Text(
+                        '\$${prediction['amount'].toStringAsFixed(2)} (${prediction['confidence']}% confidence)',
+                      ),
+                      pw.Text(prediction['description']),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ];
+          },
         ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.primaryTeal.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+      );
+
+      final output = await getTemporaryDirectory();
+      final file = File('${output.path}/financial_insights.pdf');
+      await file.writeAsBytes(await pdf.save());
+
+      await Printing.sharePdf(
+        bytes: await pdf.save(),
+        filename: 'financial_insights.pdf',
+      );
+    } catch (e) {
+      _showErrorDialog('Failed to generate PDF: $e');
+    } finally {
+      setState(() => _isGeneratingPDF = false);
+    }
+  }
+
+  Future<void> _shareReport() async {
+    try {
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(32),
+          build: (pw.Context context) => [
+            pw.Header(
+              level: 0,
+              child: pw.Text(
+                'Financial Insights Report',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
-              child: Icon(icon, color: AppColors.primaryTeal, size: 20),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryText,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.secondaryText,
-                    ),
-                  ),
-                ],
-              ),
+            pw.SizedBox(height: 20),
+            pw.Text(
+              'Summary',
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
             ),
-            const Icon(
-              LucideIcons.chevronRight,
-              color: AppColors.secondaryText,
-              size: 20,
+            pw.Bullet(
+              text:
+                  'Total Expenses: \$${(_reportData['summary']['totalExpenses'] as double).toStringAsFixed(2)}',
+            ),
+            pw.Bullet(
+              text:
+                  'Monthly Average: \$${(_reportData['summary']['monthlyAverage'] as double).toStringAsFixed(2)}',
+            ),
+            pw.Bullet(
+              text: 'Top Category: ${_reportData['summary']['topCategory']}',
             ),
           ],
         ),
-      ),
-    );
+      );
+
+      final output = await getTemporaryDirectory();
+      final file = File('${output.path}/financial_insights_share.pdf');
+      await file.writeAsBytes(await pdf.save());
+
+      await Share.shareXFiles([
+        XFile(file.path),
+      ], text: 'Check out my financial insights report!');
+    } catch (e) {
+      _showErrorDialog('Failed to share report: $e');
+    }
   }
 
-  void _generateReport(String type) {
+  void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Generate ${type.toUpperCase()} Report'),
-        content: const Text('AI is generating your personalized report...'),
+        title: const Text('Error'),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$type report generated successfully!')),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryTeal,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Download'),
+            child: const Text('OK'),
           ),
         ],
       ),
