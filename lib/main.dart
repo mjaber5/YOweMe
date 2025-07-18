@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yoweme/core/utils/theme/theme.dart';
 import 'package:yoweme/core/utils/constants/colors.dart';
 import 'package:yoweme/feature/settings/profile.dart';
-import 'package:yoweme/model/user.dart';
 import 'package:yoweme/screens/dashboard_screen.dart';
 import 'package:yoweme/screens/friend_detail_screen.dart';
 import 'package:yoweme/screens/add_expense_screen.dart';
@@ -13,7 +11,6 @@ import 'package:yoweme/screens/ai_insights_screen.dart';
 import 'package:yoweme/screens/notification_screen.dart';
 import 'package:yoweme/screens/otp_screen.dart';
 import 'package:yoweme/screens/otp_verification_screen.dart';
-import 'package:yoweme/services/account_services.dart';
 import 'package:yoweme/services/gemini_service.dart';
 
 void main() async {

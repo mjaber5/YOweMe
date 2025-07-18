@@ -108,27 +108,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _circleIconButton(
-                                    icon: LucideIcons.chevronLeft,
-                                    onPressed: () {
-                                      HapticFeedback.lightImpact();
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  Text(
-                                    widget.friendName,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  _circleIconButton(
-                                    icon: LucideIcons.settings,
-                                    onPressed: _showFriendOptions,
-                                  ),
-                                ],
+                                children: [],
                               ),
                             ),
                             Container(

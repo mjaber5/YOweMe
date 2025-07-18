@@ -4,13 +4,8 @@ import 'package:yoweme/main.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Function(ThemeMode) onThemeChanged;
-  final Function(Locale) onLocaleChanged;
 
-  const ProfileScreen({
-    super.key,
-    required this.onThemeChanged,
-    required this.onLocaleChanged,
-  });
+  const ProfileScreen({super.key, required this.onThemeChanged});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -24,10 +19,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _themeMode = themeMode;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
         backgroundColor: AppColors.getBackgroundColor(context),
@@ -38,11 +33,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: () {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => MainNavigationScreen(onThemeChanged: _changeTheme ,),
+                builder: (context) =>
+                    MainNavigationScreen(onThemeChanged: _changeTheme),
               ),
             );
           },
-        )),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -185,14 +182,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'English',
                     'Change language to English',
                     Icons.language,
-                    () => widget.onLocaleChanged(const Locale('en')),
+                    () {},
                   ),
                   _buildLanguageOption(
                     context,
                     'العربية',
                     'تغيير اللغة إلى العربية',
                     Icons.translate,
-                    () => widget.onLocaleChanged(const Locale('ar')),
+                    () {},
                   ),
                 ],
               ),
