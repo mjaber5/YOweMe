@@ -17,8 +17,8 @@ class GeminiService {
   // Generate spending insights
   static Future<Map<String, dynamic>> generateSpendingInsights(
     List<Expense> expenses,
-    User currentUser,
-    List<User> friends,
+    Account currentUser,
+    List<Account> friends,
   ) async {
     if (_model == null) throw Exception('Gemini not initialized');
 
@@ -38,8 +38,8 @@ class GeminiService {
     Analyze this expense data and provide insights in JSON format:
     
     Expenses: ${expenseData.toString()}
-    Current User: ${currentUser.name}
-    Friends: ${friends.map((f) => f.name).toList()}
+    Current User: ${currentUser.customerId}
+    Friends: ${friends.map((f) => f.customerId).toList()}
     
     Please provide:
     1. Monthly spending trend

@@ -509,39 +509,5 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
     );
   }
 
-  // void _proceedToPayment() {
-  //   HapticFeedback.selectionClick();
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: const Text('Proceeding to payment...'),
-  //       backgroundColor: AppColors.success,
-  //       behavior: SnackBarBehavior.floating,
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-  //     ),
-  //   );
-  // }
-
-  // void _sendReminder() {
-  //   HapticFeedback.selectionClick();
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: const Text('Reminder sent!'),
-  //       backgroundColor: AppColors.success,
-  //       behavior: SnackBarBehavior.floating,
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-  //     ),
-  //   );
-  // }
-
-  // void _sharePayment() {
-  //   HapticFeedback.selectionClick();
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: const Text('Sharing payment details...'),
-  //       backgroundColor: AppColors.info,
-  //       behavior: SnackBarBehavior.floating,
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-  //     ),
-  //   );
   // }
 }

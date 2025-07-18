@@ -145,13 +145,11 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     try {
       // Mock data for demonstration - replace with real data
       final List<Expense> mockExpenses = []; // Your expense data
-      final User mockUser = User(
-        id: '1',
-        name: 'Current User',
-        email: 'user@example.com',
-        createdAt: DateTime.now(),
+      final Account mockUser = Account(
+        customerId: 'IND_CUST_001',
+        openingDate: DateTime.now(),
       );
-      final List<User> mockFriends = []; // Friends list
+      final List<Account> mockFriends = []; // Friends list
 
       // Simulate AI processing
       await Future.delayed(const Duration(seconds: 2));

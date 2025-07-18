@@ -1,21 +1,30 @@
-// lib/models/balance.dart
 class Balance {
-  final String userId;
-  final String friendId;
-  final double
-  amount; // positive means friend owes you, negative means you owe friend
+  final String accountId;
+  final double availableBalance;
+  final String currency;
 
-  Balance({required this.userId, required this.friendId, required this.amount});
+  Balance({
+    required this.accountId,
+    required this.availableBalance,
+    required this.currency,
+  });
 
   factory Balance.fromJson(Map<String, dynamic> json) {
-    return Balance(
-      userId: json['userId'],
-      friendId: json['friendId'],
-      amount: json['amount'].toDouble(),
-    );
-  }
+    // Handle different possible structures (some might have availableBalance, some only currentBalance)
+    final balanceData =
+        json['availableBalance'] ?? json['currentBalance'] ?? {};
+    final balanceAmount = balanceData['balanceAmount'] ?? 0.0;
 
-  Map<String, dynamic> toJson() {
-    return {'userId': userId, 'friendId': friendId, 'amount': amount};
+    return Balance(
+      accountId: json['accountId'] ?? 'Unknown',
+      availableBalance: balanceAmount is num
+          ? balanceAmount.toDouble()
+          : double.tryParse(balanceAmount.toString()) ?? 0.0,
+      currency:
+          json['balanceCurrency'] ??
+          json['currency'] ??
+          json['currencyCode'] ??
+          'JOD',
+    );
   }
 }

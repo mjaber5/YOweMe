@@ -1,36 +1,13 @@
-// lib/models/user.dart
-class User {
-  final String id;
-  final String name;
-  final String email;
-  final String? profileImage;
-  final DateTime createdAt;
+class Account {
+  final String customerId;
+  final DateTime openingDate;
 
-  User({
-    required this.id,
-    required this.name,
-    required this.email,
-    this.profileImage,
-    required this.createdAt,
-  });
+  Account({required this.customerId, required this.openingDate});
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      profileImage: json['profileImage'],
-      createdAt: DateTime.parse(json['createdAt']),
+  factory Account.fromJson(Map<String, dynamic> json) {
+    return Account(
+      customerId: json['customerId'],
+      openingDate: DateTime.parse(json['openingDate']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'profileImage': profileImage,
-      'createdAt': createdAt.toIso8601String(),
-    };
   }
 }
