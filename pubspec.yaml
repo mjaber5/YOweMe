@@ -43,6 +43,8 @@ dependencies:
   google_generative_ai: ^0.4.7
   flutter_dotenv: ^5.2.1
   image_picker: ^1.1.2
+  local_auth: ^2.3.0
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:
