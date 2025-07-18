@@ -225,13 +225,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowLight,
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
           child: IconButton(
             onPressed: _markAllAsRead,
@@ -269,15 +262,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primaryTeal : Colors.white,
                   borderRadius: BorderRadius.circular(28),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isSelected
-                          ? AppColors.primaryTeal.withOpacity(0.3)
-                          : Colors.black.withOpacity(0.06),
-                      blurRadius: isSelected ? 10 : 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
                 ),
                 child: Text(
                   filter,
@@ -324,13 +308,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
+
         border: !notification['isRead']
             ? Border.all(
                 color: AppColors.primaryTeal.withOpacity(0.3),
