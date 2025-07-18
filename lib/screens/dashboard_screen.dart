@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:yoweme/l10n/app_localizations.dart';
 import 'package:yoweme/model/trasnactions.dart';
 import 'package:yoweme/model/user.dart';
 import 'package:yoweme/model/balance.dart';
@@ -64,6 +65,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
       body: SafeArea(
@@ -75,7 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Dashboard',
+                    l10n.dashboard,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
@@ -120,7 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Balance',
+                        l10n.balance,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.getSecondaryTextColor(context),
@@ -145,7 +148,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Overall',
+                                  l10n.overall,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.getSecondaryTextColor(
@@ -172,7 +175,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'I owe',
+                                  l10n.iOwe,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.getSecondaryTextColor(
@@ -197,7 +200,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Owes me',
+                                  l10n.owesMe,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.getSecondaryTextColor(
@@ -249,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       );
                     } else if (!snapshot.hasData || snapshot.data![0].isEmpty) {
-                      return _buildEmptyState();
+                      return _buildEmptyState(l10n);
                     }
 
                     final accounts = snapshot.data![0] as List<Account>;
@@ -295,7 +298,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           'currency': balance.currency,
                         };
 
-                        return _buildFriendItem(friend);
+                        return _buildFriendItem(friend, l10n);
                       },
                     );
                   },
@@ -308,7 +311,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildFriendItem(Map<String, dynamic> friend) {
+  Widget _buildFriendItem(Map<String, dynamic> friend, AppLocalizations l10n) {
     return GestureDetector(
       onTap: () => _navigateToFriendDetail(friend),
       child: Container(
@@ -364,7 +367,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Account: ${friend['accountId']} • ${friend['date']}',
+                    '${l10n.account}: ${friend['accountId']} • ${friend['date']}',
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.getSecondaryTextColor(context),
@@ -380,10 +383,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Text(
                   friend['amount'] == 0
-                      ? 'NO BALANCE'
+                      ? l10n.noBalance
                       : friend['amount'] < 0
-                      ? 'YOU OWE'
-                      : 'OWES YOU',
+                      ? l10n.youOwe
+                      : l10n.owesYou,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
@@ -523,7 +526,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -542,7 +545,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         const SizedBox(height: 24),
         Text(
-          'No accounts found',
+          l10n.noAccountsFound,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -551,7 +554,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Add accounts to start splitting expenses',
+          l10n.addAccountToSplitwise,
           style: TextStyle(
             fontSize: 14,
             color: AppColors.getSecondaryTextColor(context),
@@ -568,7 +571,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: const Text('Add account to splitwise'),
+          child: Text(l10n.addAccountToSplitwise),
         ),
       ],
     );

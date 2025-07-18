@@ -6,6 +6,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:yoweme/l10n/app_localizations.dart';
 import 'dart:io';
 import 'package:yoweme/model/expense.dart';
 import 'package:yoweme/model/user.dart';
@@ -175,6 +176,8 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
@@ -182,7 +185,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.getPrimaryTextColor(context)),
         title: Text(
-          'AI Insights',
+          l10n.aiInsights,
           style: TextStyle(
             color: AppColors.getPrimaryTextColor(context),
             fontWeight: FontWeight.w600,
@@ -194,14 +197,14 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
               LucideIcons.share,
               color: AppColors.getPrimaryTextColor(context),
             ),
-            onPressed: _shareReport,
+            onPressed: () => _shareReport(l10n),
           ),
           IconButton(
             icon: Icon(
               LucideIcons.download,
               color: AppColors.getPrimaryTextColor(context),
             ),
-            onPressed: _downloadPDF,
+            onPressed: () => _downloadPDF(l10n),
           ),
           IconButton(
             icon: Icon(
@@ -217,27 +220,27 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
           unselectedLabelColor: AppColors.getSecondaryTextColor(context),
           indicatorColor: AppColors.primaryTeal,
           dividerColor: AppColors.getSurfaceColor(context),
-          tabs: const [
+          tabs: [
             Tab(text: 'Overview'),
-            Tab(text: 'Predictions'),
-            Tab(text: 'Reports'),
+            Tab(text: l10n.financialPredictions),
+            Tab(text: l10n.reports),
           ],
         ),
       ),
       body: _isLoading
-          ? _buildLoadingState()
+          ? _buildLoadingState(l10n)
           : TabBarView(
               controller: _tabController,
               children: [
-                _buildOverviewTab(),
-                _buildPredictionsTab(),
-                _buildReportsTab(),
+                _buildOverviewTab(l10n),
+                _buildPredictionsTab(l10n),
+                _buildReportsTab(l10n),
               ],
             ),
     );
   }
 
-  Widget _buildLoadingState() {
+  Widget _buildLoadingState(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -264,27 +267,27 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     );
   }
 
-  Widget _buildOverviewTab() {
+  Widget _buildOverviewTab(AppLocalizations l10n) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildExecutiveSummaryCard(),
+          _buildExecutiveSummaryCard(l10n),
           const SizedBox(height: 20),
-          _buildSpendingSummaryCard(),
+          _buildSpendingSummaryCard(l10n),
           const SizedBox(height: 20),
-          _buildMonthlyTrendCard(),
+          _buildMonthlyTrendCard(l10n),
           const SizedBox(height: 20),
-          _buildCategoryBreakdownCard(),
+          _buildCategoryBreakdownCard(l10n),
           const SizedBox(height: 20),
-          _buildQuickInsightsCard(),
+          _buildQuickInsightsCard(l10n),
         ],
       ),
     );
   }
 
-  Widget _buildExecutiveSummaryCard() {
+  Widget _buildExecutiveSummaryCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -316,22 +319,22 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
                 ),
               ),
               const SizedBox(width: 16),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Executive Summary',
-                      style: TextStyle(
+                      l10n.executiveSummary,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      'AI-powered financial insights',
-                      style: TextStyle(fontSize: 14, color: Colors.white70),
+                      l10n.aiPoweredInsights,
+                      style: const TextStyle(fontSize: 14, color: Colors.white70),
                     ),
                   ],
                 ),
@@ -339,22 +342,19 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
             ],
           ),
           const SizedBox(height: 24),
-          const Text(
-            'Key Findings',
-            style: TextStyle(
+          Text(
+            l10n.keyFindings,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 12),
-          _buildSummaryPoint('📈', 'Spending increased by 12.5% this month'),
-          _buildSummaryPoint(
-            '🍽️',
-            'Food & Dining is your top expense category',
-          ),
-          _buildSummaryPoint('💡', 'Potential savings of \$324 identified'),
-          _buildSummaryPoint('🎯', 'On track to meet annual budget goals'),
+          _buildSummaryPoint('📈', l10n.spendingIncreased),
+          _buildSummaryPoint('🍽️', l10n.foodDiningTop),
+          _buildSummaryPoint('💡', l10n.potentialSavings),
+          _buildSummaryPoint('🎯', l10n.onTrackBudget),
         ],
       ),
     );
@@ -378,7 +378,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     );
   }
 
-  Widget _buildSpendingSummaryCard() {
+  Widget _buildSpendingSummaryCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -411,7 +411,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
               ),
               const SizedBox(width: 12),
               Text(
-                'Financial Metrics',
+                l10n.financialMetrics,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -425,7 +425,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
             children: [
               Expanded(
                 child: _buildMetricItem(
-                  'This Month',
+                  l10n.thisMonth,
                   '\$1,247.50',
                   '+12.5%',
                   AppColors.positiveGreen,
@@ -433,7 +433,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
               ),
               Expanded(
                 child: _buildMetricItem(
-                  'Avg/Month',
+                  l10n.avgMonth,
                   '\$982.30',
                   '-8.2%',
                   AppColors.negativeRed,
@@ -446,7 +446,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
             children: [
               Expanded(
                 child: _buildMetricItem(
-                  'Top Category',
+                  l10n.topCategory,
                   'Food & Dining',
                   '34%',
                   AppColors.neutralBlue,
@@ -454,7 +454,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
               ),
               Expanded(
                 child: _buildMetricItem(
-                  'Most Active',
+                  l10n.mostActive,
                   'Victor',
                   '12 expenses',
                   AppColors.primaryTeal,
@@ -505,7 +505,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     );
   }
 
-  Widget _buildMonthlyTrendCard() {
+  Widget _buildMonthlyTrendCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -526,7 +526,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Monthly Spending Trend',
+                l10n.monthlySpendingTrend,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -653,7 +653,6 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     );
   }
 
-  // Add this helper method to safely create FlSpot objects
   List<FlSpot> _buildChartSpots() {
     final List<FlSpot> spots = [];
 
@@ -661,7 +660,6 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
       final monthData = _reportData['monthlyTrend'][i];
       final amount = monthData['amount'];
 
-      // Safely convert to double
       double yValue = 0.0;
       if (amount is num) {
         yValue = amount.toDouble();
@@ -675,7 +673,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     return spots;
   }
 
-  Widget _buildCategoryBreakdownCard() {
+  Widget _buildCategoryBreakdownCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -693,7 +691,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Category Breakdown',
+            l10n.categoryBreakdown,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -776,7 +774,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     }
   }
 
-  Widget _buildQuickInsightsCard() {
+  Widget _buildQuickInsightsCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -794,7 +792,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Quick Insights',
+            l10n.quickInsights,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -884,14 +882,14 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     );
   }
 
-  Widget _buildPredictionsTab() {
+  Widget _buildPredictionsTab(AppLocalizations l10n) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Financial Predictions',
+            l10n.financialPredictions,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -965,14 +963,14 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     );
   }
 
-  Widget _buildReportsTab() {
+  Widget _buildReportsTab(AppLocalizations l10n) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Reports',
+            l10n.reports,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -981,9 +979,9 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: _downloadPDF,
+            onPressed: () => _downloadPDF(l10n),
             icon: const Icon(LucideIcons.download),
-            label: const Text('Download Full Report'),
+            label: Text(l10n.downloadFullReport),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryTeal,
               foregroundColor: Colors.white,
@@ -995,9 +993,9 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: _shareReport,
+            onPressed: () => _shareReport(l10n),
             icon: const Icon(LucideIcons.share),
-            label: const Text('Share Report'),
+            label: Text(l10n.shareReport),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryTeal,
               foregroundColor: Colors.white,
@@ -1025,7 +1023,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Report Details',
+                  l10n.reportDetails,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -1034,23 +1032,23 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Generated: ${_reportData['generatedAt'].toString().substring(0, 16)}',
+                  '${l10n.generated}: ${_reportData['generatedAt'].toString().substring(0, 16)}',
                   style: TextStyle(
                     fontSize: 14,
                     color: AppColors.getSecondaryTextColor(context),
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Total Expenses: \$${(_reportData['summary']['totalExpenses'] as double).toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.getSecondaryTextColor(context),
-                  ),
-                ),
+               Text(
+  '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
+  style: TextStyle(
+    fontSize: 14,
+    color: AppColors.getSecondaryTextColor(context),
+  ),
+),
                 const SizedBox(height: 8),
                 Text(
-                  'Categories Analyzed: ${_reportData['categories'].length}',
+                  '${l10n.categoriesAnalyzed}: ${_reportData['categories'].length}',
                   style: TextStyle(
                     fontSize: 14,
                     color: AppColors.getSecondaryTextColor(context),
@@ -1064,7 +1062,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     );
   }
 
-  Future<void> _downloadPDF() async {
+  Future<void> _downloadPDF(AppLocalizations l10n) async {
     setState(() => _isGeneratingPDF = true);
     try {
       final pdf = pw.Document();
@@ -1094,17 +1092,17 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
                 ),
               ),
               pw.SizedBox(height: 10),
-              pw.Bullet(
-                text:
-                    'Total Expenses: \$${(_reportData['summary']['totalExpenses'] as double).toStringAsFixed(2)}',
-              ),
-              pw.Bullet(
-                text:
-                    'Monthly Average: \$${(_reportData['summary']['monthlyAverage'] as double).toStringAsFixed(2)}',
-              ),
-              pw.Bullet(
-                text: 'Top Category: ${_reportData['summary']['topCategory']}',
-              ),
+            pw.Bullet(
+  text:
+      '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
+),
+pw.Bullet(
+  text:
+      'Monthly Average: \$${(_reportData['summary']!['monthlyAverage'] as double).toStringAsFixed(2)}',
+),
+pw.Bullet(
+  text: '${l10n.topCategory}: ${_reportData['summary']!['topCategory']}',
+),
               pw.SizedBox(height: 20),
               pw.Text(
                 'Insights',
@@ -1150,9 +1148,9 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
                         prediction['title'],
                         style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                       ),
-                      pw.Text(
-                        '\$${prediction['amount'].toStringAsFixed(2)} (${prediction['confidence']}% confidence)',
-                      ),
+                     pw.Text(
+  '\$${prediction['amount'].toStringAsFixed(2)} (${prediction['confidence']}% confidence)',
+),
                       pw.Text(prediction['description']),
                     ],
                   ),
@@ -1178,7 +1176,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     }
   }
 
-  Future<void> _shareReport() async {
+  Future<void> _shareReport(AppLocalizations l10n) async {
     try {
       final pdf = pw.Document();
 
@@ -1202,16 +1200,16 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
               'Summary',
               style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
             ),
+          pw.Bullet(
+  text:
+      '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
+),
+pw.Bullet(
+  text:
+      'Monthly Average: \$${(_reportData['summary']!['monthlyAverage'] as double).toStringAsFixed(2)}',
+),
             pw.Bullet(
-              text:
-                  'Total Expenses: \$${(_reportData['summary']['totalExpenses'] as double).toStringAsFixed(2)}',
-            ),
-            pw.Bullet(
-              text:
-                  'Monthly Average: \$${(_reportData['summary']['monthlyAverage'] as double).toStringAsFixed(2)}',
-            ),
-            pw.Bullet(
-              text: 'Top Category: ${_reportData['summary']['topCategory']}',
+              text: '${l10n.topCategory}: ${_reportData['summary']['topCategory']}',
             ),
           ],
         ),
@@ -1233,12 +1231,12 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Error'),
+        title: Text(AppLocalizations.of(context)!.error),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),

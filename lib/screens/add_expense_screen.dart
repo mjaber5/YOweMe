@@ -1,7 +1,8 @@
-// lib/screens/add_expense_screen.dart (Updated with theme support)
+// lib/screens/add_expense_screen.dart (Updated with localization)
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:yoweme/l10n/app_localizations.dart';
 import '../core/utils/constants/colors.dart';
 import '../services/gemini_service.dart';
 
@@ -17,7 +18,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final _descriptionController = TextEditingController();
   final _amountController = TextEditingController();
   String _selectedSplitOption = 'Equal Split';
-
 
   String _selectedCategory = 'Food & Dining';
   List<String> _selectedFriends = [];
@@ -55,6 +55,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
@@ -62,7 +64,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.getPrimaryTextColor(context)),
         title: Text(
-          'Add Expense',
+          l10n.addExpense,
           style: TextStyle(
             color: AppColors.getPrimaryTextColor(context),
             fontWeight: FontWeight.w600,
@@ -86,18 +88,18 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Receipt Image Section
-              if (_receiptImage != null) _buildReceiptImageSection(),
+              if (_receiptImage != null) _buildReceiptImageSection(l10n),
 
               // Description Field
               _buildSectionCard(
-                title: 'Description',
+                title: l10n.description,
                 child: TextFormField(
                   controller: _descriptionController,
                   style: TextStyle(
                     color: AppColors.getPrimaryTextColor(context),
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Enter expense description',
+                    hintText: l10n.enterExpenseDescription,
                     hintStyle: TextStyle(
                       color: AppColors.getLightTextColor(context),
                     ),
@@ -137,7 +139,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
               // Amount Field
               _buildSectionCard(
-                title: 'Amount',
+                title: l10n.amount,
                 child: TextFormField(
                   controller: _amountController,
                   keyboardType: TextInputType.number,
@@ -192,7 +194,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
               // Category Selection
               _buildSectionCard(
-                title: 'Category',
+                title: l10n.category,
                 subtitle: _isAIProcessing ? 'AI is suggesting...' : null,
                 child: _buildCategorySelector(),
               ),
@@ -201,15 +203,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
               // Split With Friends
               _buildSectionCard(
-                title: 'Split with',
+                title: l10n.splitWith,
                 subtitle: '${_selectedFriends.length} friends selected',
-                child: _buildFriendsSelector(),
+                child: _buildFriendsSelector(l10n),
               ),
 
               const SizedBox(height: 32),
 
               // Split Options
-              _buildSplitOptionsCard(),
+              _buildSplitOptionsCard(l10n),
 
               const SizedBox(height: 32),
 
@@ -226,9 +228,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: AppColors.primaryTeal),
+                      child: Text(
+                        l10n.cancel,
+                        style: const TextStyle(color: AppColors.primaryTeal),
                       ),
                     ),
                   ),
@@ -236,7 +238,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
-                      onPressed: _addExpense,
+                      onPressed: () => _addExpense(l10n),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryTeal,
                         foregroundColor: Colors.white,
@@ -245,7 +247,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Add Expense'),
+                      child: Text(l10n.addExpense),
                     ),
                   ),
                 ],
@@ -319,7 +321,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
-  Widget _buildReceiptImageSection() {
+  Widget _buildReceiptImageSection(AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
@@ -341,7 +343,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Receipt Image',
+                l10n.receiptImage,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -417,7 +419,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
-  Widget _buildFriendsSelector() {
+  Widget _buildFriendsSelector(AppLocalizations l10n) {
     return Column(
       children: [
         // Select All Toggle
@@ -439,7 +441,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               activeColor: AppColors.primaryTeal,
             ),
             Text(
-              'Select All Friends',
+              l10n.selectAllFriends,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -532,121 +534,121 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
-  Widget _buildSplitOptionsCard() {
-  return Container(
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: AppColors.getCardColor(context),
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: AppColors.getShadowLight(context),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Split Options',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.getPrimaryTextColor(context),
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        _buildSplitOption(
-          title: 'Equal Split',
-          subtitle: 'Split equally among all participants',
-          icon: LucideIcons.users,
-        ),
-        const SizedBox(height: 12),
-
-        _buildSplitOption(
-          title: 'Custom Split',
-          subtitle: 'Set custom amounts for each person',
-          icon: LucideIcons.calculator,
-        ),
-        const SizedBox(height: 12),
-
-        _buildSplitOption(
-          title: 'Percentage Split',
-          subtitle: 'Split by percentage',
-          icon: LucideIcons.percent,
-        ),
-      ],
-    ),
-  );
-}
-
- Widget _buildSplitOption({
-  required String title,
-  required String subtitle,
-  required IconData icon,
-}) {
-  final isSelected = _selectedSplitOption == title;
-
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        _selectedSplitOption = title;
-      });
-    },
-    child: Container(
-      padding: const EdgeInsets.all(12),
+  Widget _buildSplitOptionsCard(AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isSelected
-            ? AppColors.primaryTeal.withOpacity(0.1)
-            : AppColors.getSurfaceColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isSelected ? AppColors.primaryTeal : Colors.transparent,
-          width: 1.5,
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? AppColors.primaryTeal : AppColors.getPrimaryTextColor(context),
+        color: AppColors.getCardColor(context),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.getShadowLight(context),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    color: isSelected
-                        ? AppColors.primaryTeal
-                        : AppColors.getPrimaryTextColor(context),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.getSecondaryTextColor(context),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (isSelected)
-            Icon(Icons.check_circle, color: AppColors.primaryTeal, size: 20),
         ],
       ),
-    ),
-  );
-}
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.splitOptions,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.getPrimaryTextColor(context),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          _buildSplitOption(
+            title: l10n.equalSplit,
+            subtitle: l10n.equalSplitDesc,
+            icon: LucideIcons.users,
+          ),
+          const SizedBox(height: 12),
+
+          _buildSplitOption(
+            title: l10n.customSplit,
+            subtitle: l10n.customSplitDesc,
+            icon: LucideIcons.calculator,
+          ),
+          const SizedBox(height: 12),
+
+          _buildSplitOption(
+            title: l10n.percentageSplit,
+            subtitle: l10n.percentageSplitDesc,
+            icon: LucideIcons.percent,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSplitOption({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    final isSelected = _selectedSplitOption == title;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedSplitOption = title;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primaryTeal.withOpacity(0.1)
+              : AppColors.getSurfaceColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryTeal : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? AppColors.primaryTeal : AppColors.getPrimaryTextColor(context),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      color: isSelected
+                          ? AppColors.primaryTeal
+                          : AppColors.getPrimaryTextColor(context),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.getSecondaryTextColor(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Icon(Icons.check_circle, color: AppColors.primaryTeal, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
 
   void _onDescriptionChanged(String value) {
     // Trigger AI categorization when user stops typing
@@ -712,11 +714,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     }
   }
 
-  void _addExpense() {
+  void _addExpense(AppLocalizations l10n) {
     if (_formKey.currentState!.validate()) {
       if (_selectedFriends.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select at least one friend')),
+          SnackBar(content: Text(l10n.pleaseSelectAtLeastOneFriend)),
         );
         return;
       }
@@ -724,7 +726,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       // Here you would save the expense to your backend/database
       // For now, just show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Expense added successfully!')),
+        SnackBar(content: Text(l10n.expenseAddedSuccessfully)),
       );
 
       Navigator.pop(context);

@@ -1,8 +1,9 @@
-// lib/screens/notifications_screen.dart (Updated with theme support)
+// lib/screens/notifications_screen.dart (Updated with localization)
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:yoweme/l10n/app_localizations.dart';
 import '../core/utils/constants/colors.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -18,13 +19,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   late Animation<double> _fadeAnimation;
 
   String _selectedFilter = 'All';
-  final List<String> _filters = [
-    'All',
-    'Payments',
-    'Reminders',
-    'Updates',
-    'Social',
-  ];
+  List<String> _filters = [];
 
   // Fake notification data
   final List<Map<String, dynamic>> _allNotifications = [
@@ -143,20 +138,45 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     super.dispose();
   }
 
-  List<Map<String, dynamic>> get _filteredNotifications {
+  void _initializeFilters(AppLocalizations l10n) {
+    _filters = [
+      l10n.all,
+      l10n.payments,
+      l10n.reminders,
+      l10n.updates,
+      l10n.social,
+    ];
+    
     if (_selectedFilter == 'All') {
+      _selectedFilter = l10n.all;
+    }
+  }
+
+  List<Map<String, dynamic>> get _filteredNotifications {
+    final l10n = AppLocalizations.of(context)!;
+    if (_selectedFilter == l10n.all) {
       return _allNotifications;
     }
+    
+    String categoryKey = _selectedFilter;
+    if (_selectedFilter == l10n.payments) categoryKey = 'Payments';
+    if (_selectedFilter == l10n.reminders) categoryKey = 'Reminders';
+    if (_selectedFilter == l10n.updates) categoryKey = 'Updates';
+    if (_selectedFilter == l10n.social) categoryKey = 'Social';
+    
     return _allNotifications
-        .where((notification) => notification['category'] == _selectedFilter)
+        .where((notification) => notification['category'] == categoryKey)
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    _initializeFilters(l10n);
+    
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(l10n),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -165,9 +185,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               opacity: _fadeAnimation,
               child: Column(
                 children: [
-                  _buildFilterTabs(),
+                  _buildFilterTabs(l10n),
                   const SizedBox(height: 16),
-                  _buildNotificationsList(),
+                  _buildNotificationsList(l10n),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -178,7 +198,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(AppLocalizations l10n) {
     return AppBar(
       backgroundColor: AppColors.getBackgroundColor(context),
       elevation: 0,
@@ -191,7 +211,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Notifications',
+              l10n.notifications,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -217,7 +237,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ],
           ),
           child: IconButton(
-            onPressed: _markAllAsRead,
+            onPressed: () => _markAllAsRead(l10n),
             icon: const Icon(LucideIcons.checkCheck, size: 24),
             color: AppColors.primaryTeal,
           ),
@@ -226,7 +246,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  Widget _buildFilterTabs() {
+  Widget _buildFilterTabs(AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: SingleChildScrollView(
@@ -280,11 +300,11 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  Widget _buildNotificationsList() {
+  Widget _buildNotificationsList(AppLocalizations l10n) {
     final notifications = _filteredNotifications;
 
     if (notifications.isEmpty) {
-      return _buildEmptyState();
+      return _buildEmptyState(l10n);
     }
 
     return Padding(
@@ -297,14 +317,17 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             padding: EdgeInsets.only(
               bottom: index == notifications.length - 1 ? 0 : 16,
             ),
-            child: _buildNotificationItem(notification),
+            child: _buildNotificationItem(notification, l10n),
           );
         }).toList(),
       ),
     );
   }
 
-  Widget _buildNotificationItem(Map<String, dynamic> notification) {
+  Widget _buildNotificationItem(Map<String, dynamic> notification, AppLocalizations l10n) {
+    // Translate notification titles and messages based on type
+    String localizedTitle = _getLocalizedNotificationTitle(notification['type'], l10n);
+    
     return Container(
       decoration: BoxDecoration(
         color: AppColors.getCardColor(context),
@@ -345,7 +368,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                             children: [
                               Expanded(
                                 child: Text(
-                                  notification['title'],
+                                  localizedTitle,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: notification['isRead']
@@ -394,7 +417,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 if (notification['actionType'] != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 16),
-                    child: _buildActionButtons(notification),
+                    child: _buildActionButtons(notification, l10n),
                   ),
               ],
             ),
@@ -402,6 +425,27 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         ),
       ),
     );
+  }
+
+  String _getLocalizedNotificationTitle(String type, AppLocalizations l10n) {
+    switch (type) {
+      case 'payment_received':
+        return l10n.paymentReceived;
+      case 'reminder_sent':
+        return l10n.reminderSent;
+      case 'expense_added':
+        return l10n.newExpenseAdded;
+      case 'payment_request':
+        return l10n.paymentRequest;
+      case 'friend_joined':
+        return l10n.friendJoined;
+      case 'settlement_complete':
+        return l10n.settlementComplete;
+      case 'reminder_received':
+        return l10n.paymentReminder;
+      default:
+        return 'Notification';
+    }
   }
 
   Widget _buildNotificationIcon(Map<String, dynamic> notification) {
@@ -556,13 +600,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  Widget _buildActionButtons(Map<String, dynamic> notification) {
+  Widget _buildActionButtons(Map<String, dynamic> notification, AppLocalizations l10n) {
     return Row(
       children: [
         if (notification['actionType'] == 'pay_now') ...[
           Expanded(
             child: ElevatedButton(
-              onPressed: () => _handlePayNow(notification),
+              onPressed: () => _handlePayNow(notification, l10n),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryTeal,
                 foregroundColor: Colors.white,
@@ -572,16 +616,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 ),
                 elevation: 2,
               ),
-              child: const Text(
-                'Pay Now',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                l10n.payNow,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: OutlinedButton(
-              onPressed: () => _handleViewDetails(notification),
+              onPressed: () => _handleViewDetails(notification, l10n),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.primaryTeal,
                 side: BorderSide(color: AppColors.primaryTeal, width: 1.5),
@@ -590,16 +634,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'View Details',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                l10n.viewDetails,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
         ] else if (notification['actionType'] == 'add_friend') ...[
           Expanded(
             child: ElevatedButton(
-              onPressed: () => _handleAddFriend(notification),
+              onPressed: () => _handleAddFriend(notification, l10n),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.success,
                 foregroundColor: Colors.white,
@@ -609,16 +653,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 ),
                 elevation: 2,
               ),
-              child: const Text(
-                'Add Friend',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                l10n.addFriend,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
         ] else ...[
           Expanded(
             child: OutlinedButton(
-              onPressed: () => _handleViewDetails(notification),
+              onPressed: () => _handleViewDetails(notification, l10n),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.primaryTeal,
                 side: BorderSide(
@@ -630,9 +674,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'View Details',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                l10n.viewDetails,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -641,7 +685,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(48),
       child: Column(
@@ -662,7 +706,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ),
           const SizedBox(height: 32),
           Text(
-            'No ${_selectedFilter.toLowerCase()} notifications',
+            l10n.noNotifications(_selectedFilter.toLowerCase()),
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w600,
@@ -671,7 +715,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ),
           const SizedBox(height: 12),
           Text(
-            'You\'re all caught up! Check back later for updates.',
+            l10n.allCaughtUp,
             style: TextStyle(
               fontSize: 16,
               color: AppColors.getSecondaryTextColor(context),
@@ -699,7 +743,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     }
   }
 
-  void _markAllAsRead() {
+  void _markAllAsRead(AppLocalizations l10n) {
     setState(() {
       for (var notification in _allNotifications) {
         notification['isRead'] = true;
@@ -709,7 +753,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     HapticFeedback.vibrate();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('All notifications marked as read'),
+        content: Text(l10n.markAllAsRead),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -723,22 +767,21 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     });
     HapticFeedback.lightImpact();
   }
-
-  void _handlePayNow(Map<String, dynamic> notification) {
-    HapticFeedback.mediumImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Processing payment of \$${notification['amount'].toStringAsFixed(2)}...',
-        ),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+void _handlePayNow(Map<String, dynamic> notification, AppLocalizations l10n) {
+  HapticFeedback.mediumImpact();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        'Processing payment of \$${notification['amount'].toStringAsFixed(2)}...',
       ),
-    );
-  }
+      backgroundColor: AppColors.success,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+  );
+}
 
-  void _handleViewDetails(Map<String, dynamic> notification) {
+  void _handleViewDetails(Map<String, dynamic> notification, AppLocalizations l10n) {
     HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -750,7 +793,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  void _handleAddFriend(Map<String, dynamic> notification) {
+  void _handleAddFriend(Map<String, dynamic> notification, AppLocalizations l10n) {
     HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
