@@ -47,6 +47,8 @@ dependencies:
   printing: ^5.14.2
   share_plus: ^11.0.0
   path_provider: ^2.1.5
+  fluttertoast: ^8.2.12
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:

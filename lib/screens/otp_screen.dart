@@ -1,4 +1,4 @@
-// lib/screens/otp_screen.dart (Updated with theme support)
+// lib/screens/otp_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -16,6 +16,7 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   bool _isLoading = false;
+
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
@@ -24,10 +25,12 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -60,7 +63,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
       setState(() => _isLoading = true);
       HapticFeedback.mediumImpact();
 
-      // Simulate sending OTP (replace with actual SMS API logic)
       await Future.delayed(const Duration(seconds: 1));
 
       if (mounted) {
@@ -76,7 +78,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
           ),
         );
 
-        // Navigate to OTP verification screen
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -112,13 +113,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                       decoration: BoxDecoration(
                         color: AppColors.getCardColor(context),
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.getShadowLight(context),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

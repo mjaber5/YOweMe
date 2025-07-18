@@ -152,12 +152,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         .toList();
   }
 
-  int get _unreadCount {
-    return _allNotifications
-        .where((notification) => !notification['isRead'])
-        .length;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
