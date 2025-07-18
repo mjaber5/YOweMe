@@ -68,8 +68,8 @@ class _YOweMeAppState extends State<YOweMeApp> {
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
       home: widget.isLoggedIn
-          ? MainNavigationScreen(onThemeChanged: _changeTheme)
-          : const OTPScreen(),
+          ? const OTPScreen()
+          : MainNavigationScreen(onThemeChanged: _changeTheme),
       debugShowCheckedModeBanner: false,
       routes: {
         '/otp': (context) => const OTPScreen(),

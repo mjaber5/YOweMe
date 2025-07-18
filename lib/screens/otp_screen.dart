@@ -1,7 +1,10 @@
 // lib/screens/otp_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:yoweme/main.dart';
 import 'package:yoweme/screens/otp_verification_screen.dart';
 import '../core/utils/constants/colors.dart';
 
@@ -13,14 +16,26 @@ class OTPScreen extends StatefulWidget {
 }
 
 class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void _changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   bool _isLoading = false;
+  bool _isBiometricLoading = false;
 
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+
+  late AnimationController _biometricController;
+  late Animation<double> _biometricScaleAnimation;
+  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
@@ -46,6 +61,19 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
           CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
         );
 
+    _biometricController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+
+    _biometricScaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _biometricController, curve: Curves.easeInOut),
+    );
+
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _biometricController, curve: Curves.easeInOut),
+    );
+
     _fadeController.forward();
     _slideController.forward();
   }
@@ -55,6 +83,7 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
     _phoneController.dispose();
     _fadeController.dispose();
     _slideController.dispose();
+    _biometricController.dispose();
     super.dispose();
   }
 
@@ -86,6 +115,41 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
           ),
         );
       }
+    }
+  }
+
+  void _handleBiometricLogin() async {
+   final LocalAuthentication auth = LocalAuthentication();
+    bool canCheckBiometrics = await auth.canCheckBiometrics;
+    bool isAuthenticated = false;
+
+    setState(() => _isBiometricLoading = true);
+
+    try {
+      if (canCheckBiometrics) {
+        isAuthenticated = await auth.authenticate(
+          localizedReason: 'يرجى التحقق من البصمة للدخول',
+          options: const AuthenticationOptions(
+            stickyAuth: true,
+            biometricOnly: true,
+          ),
+        );
+      } else {
+        Fluttertoast.showToast(msg: "البصمة غير مدعومة على هذا الجهاز");
+      }
+
+      if (isAuthenticated) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MainNavigationScreen(onThemeChanged: _changeTheme)),
+        );
+      } else {
+        Fluttertoast.showToast(msg: "فشل التحقق بالبصمة");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "حدث خطأ: $e");
+    } finally {
+      setState(() => _isBiometricLoading = false);
     }
   }
 
@@ -181,7 +245,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                               ),
                             ),
                             const SizedBox(height: 12),
-
                             _buildTextField(
                               controller: _phoneController,
                               label: 'Enter your phone number',
@@ -191,20 +254,128 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your phone number';
                                 }
-                                if (!RegExp(
-                                  r'^\+?[1-9]\d{1,14}$',
-                                ).hasMatch(value)) {
+                                if (!RegExp(r'^\+?[1-9]\d{1,14}\$')
+                                    .hasMatch(value)) {
                                   return 'Please enter a valid phone number';
                                 }
                                 return null;
                               },
                             ),
-
                             const SizedBox(height: 24),
                             _buildSendOTPButton(),
                           ],
                         ),
                       ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Fingerprint Login
+                    AnimatedBuilder(
+                      animation: _biometricScaleAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _biometricScaleAnimation.value,
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    AppColors.primaryTeal.withOpacity(0.05),
+                                    AppColors.positiveGreen.withOpacity(0.03),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color:
+                                      AppColors.primaryTeal.withOpacity(0.3),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AnimatedBuilder(
+                                    animation: _pulseAnimation,
+                                    builder: (context, child) {
+                                      return Transform.scale(
+                                        scale: _pulseAnimation.value,
+                                        child: GestureDetector(
+                                          onTap: _isBiometricLoading
+                                              ? null
+                                              : _handleBiometricLogin,
+                                          child: Container(
+                                            width: 70,
+                                            height: 70,
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                colors: [
+                                                  AppColors.primaryTeal,
+                                                  AppColors.positiveGreen,
+                                                ],
+                                              ),
+                                              shape: BoxShape.circle,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: AppColors.primaryTeal
+                                                      .withOpacity(0.3),
+                                                  blurRadius: 15,
+                                                  offset: const Offset(0, 6),
+                                                ),
+                                              ],
+                                            ),
+                                            child: _isBiometricLoading
+                                                ? const Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      color: Colors.white,
+                                                      strokeWidth: 2,
+                                                    ),
+                                                  )
+                                                : const Icon(
+                                                    Icons.fingerprint,
+                                                    size: 30,
+                                                    color: Colors.white,
+                                                  ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'تسجيل دخول سريع',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primaryTeal,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'اضغط لتسجيل الدخول بالبصمة',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: AppColors
+                                              .getSecondaryTextColor(context),
+                                        ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 32),
