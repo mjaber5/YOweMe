@@ -75,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Text(
                     'Dashboard',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.w600,
                       color: AppColors.getPrimaryTextColor(context),
                     ),

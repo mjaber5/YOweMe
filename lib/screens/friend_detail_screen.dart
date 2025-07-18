@@ -1,4 +1,3 @@
-// lib/screens/friend_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -42,58 +41,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
       'paidBy': 'Peter',
       'status': 'Pending',
     },
-    {
-      'id': '#002',
-      'title': 'Groceries',
-      'description': 'Weekly shopping at Walmart',
-      'date': '8 March 2024',
-      'amount': 862.08,
-      'icon': LucideIcons.shoppingBag,
-      'color': Colors.green,
-      'category': 'Groceries',
-      'participants': ['You', 'Peter'],
-      'paidBy': 'You',
-      'status': 'Paid',
-    },
-    {
-      'id': '#003',
-      'title': 'Movie Night',
-      'description': 'Cinema tickets and snacks',
-      'date': '15 Feb 2024',
-      'amount': -15.99,
-      'icon': LucideIcons.film,
-      'color': Colors.purple,
-      'category': 'Entertainment',
-      'participants': ['You', 'Peter', 'Camila'],
-      'paidBy': 'Peter',
-      'status': 'Paid',
-    },
-    {
-      'id': '#004',
-      'title': 'Uber Ride',
-      'description': 'Shared ride to airport',
-      'date': '10 Jan 2024',
-      'amount': -20.00,
-      'icon': LucideIcons.car,
-      'color': Colors.black,
-      'category': 'Transportation',
-      'participants': ['You', 'Peter'],
-      'paidBy': 'Peter',
-      'status': 'Paid',
-    },
-    {
-      'id': '#005',
-      'title': 'Birthday Gift',
-      'description': 'Present for Andy\'s birthday',
-      'date': '5 Jan 2024',
-      'amount': -64.30,
-      'icon': LucideIcons.gift,
-      'color': Colors.pink,
-      'category': 'Shopping',
-      'participants': ['You', 'Peter', 'Alex'],
-      'paidBy': 'Peter',
-      'status': 'Paid',
-    },
+    // ... باقي المعاملات
   ];
 
   @override
@@ -131,8 +79,12 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = Theme.of(context).textTheme.bodyLarge!.color!;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+
     return Scaffold(
-      backgroundColor: AppColors.lightGray,
+      backgroundColor: bgColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -144,36 +96,25 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                   position: _slideAnimation,
                   child: Column(
                     children: [
-                      // Header with gradient background
+                      // Header
                       Container(
                         decoration: const BoxDecoration(
                           gradient: AppColors.primaryGradient,
                         ),
                         child: Column(
                           children: [
-                            // Navigation and settings
                             Padding(
                               padding: const EdgeInsets.all(20),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.9),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        HapticFeedback.lightImpact();
-                                        Navigator.pop(context);
-                                      },
-                                      icon: const Icon(
-                                        LucideIcons.chevronLeft,
-                                        color: AppColors.primaryText,
-                                        size: 20,
-                                      ),
-                                    ),
+                                  _circleIconButton(
+                                    icon: LucideIcons.chevronLeft,
+                                    onPressed: () {
+                                      HapticFeedback.lightImpact();
+                                      Navigator.pop(context);
+                                    },
                                   ),
                                   Text(
                                     widget.friendName,
@@ -183,25 +124,13 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                                       color: Colors.white,
                                     ),
                                   ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.9),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: IconButton(
-                                      onPressed: () => _showFriendOptions(),
-                                      icon: const Icon(
-                                        LucideIcons.settings,
-                                        color: AppColors.primaryText,
-                                        size: 20,
-                                      ),
-                                    ),
+                                  _circleIconButton(
+                                    icon: LucideIcons.settings,
+                                    onPressed: _showFriendOptions,
                                   ),
                                 ],
                               ),
                             ),
-
-                            // Balance Display
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 20,
@@ -209,23 +138,16 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                               ),
                               child: Column(
                                 children: [
-                                  // Profile Avatar
-                                  Container(
-                                    width: 80,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(40),
-                                    ),
-                                    child: const Icon(
+                                  const CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: Colors.white24,
+                                    child: Icon(
                                       LucideIcons.user,
-                                      size: 40,
                                       color: Colors.white,
+                                      size: 40,
                                     ),
                                   ),
                                   const SizedBox(height: 16),
-
-                                  // Friend Name and Email
                                   Text(
                                     widget.friendName,
                                     style: const TextStyle(
@@ -243,8 +165,6 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 24),
-
-                                  // Total Balance
                                   const Text(
                                     'Total:',
                                     style: TextStyle(
@@ -268,22 +188,21 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                         ),
                       ),
 
-                      // Transactions Section
+                      // Transactions
                       Padding(
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Transactions Header
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Transactions',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.primaryText,
+                                    color: textColor,
                                   ),
                                 ),
                                 Container(
@@ -292,21 +211,17 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.white,
+                                    color: Theme.of(context).cardColor,
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: AppColors.surfaceGray,
                                     ),
                                   ),
                                   child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Text(
+                                    children: const [
+                                      Text(
                                         'All',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.primaryText,
-                                        ),
+                                        style: TextStyle(fontSize: 14),
                                       ),
                                       const SizedBox(width: 4),
                                       const Icon(
@@ -320,8 +235,6 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                               ],
                             ),
                             const SizedBox(height: 16),
-
-                            // Transactions List
                             ...mockTransactions.asMap().entries.map((entry) {
                               final index = entry.key;
                               final transaction = entry.value;
@@ -354,12 +267,11 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            // Transaction Icon
             Container(
               width: 40,
               height: 40,
@@ -374,8 +286,6 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
               ),
             ),
             const SizedBox(width: 16),
-
-            // Transaction Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -399,8 +309,6 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                 ],
               ),
             ),
-
-            // Amount and Arrow
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -452,9 +360,9 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

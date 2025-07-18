@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yoweme/core/utils/theme/theme.dart';
 import 'package:yoweme/core/utils/constants/colors.dart';
+import 'package:yoweme/feature/settings/profile.dart';
 import 'package:yoweme/model/user.dart';
 import 'package:yoweme/screens/dashboard_screen.dart';
 import 'package:yoweme/screens/friend_detail_screen.dart';
@@ -71,8 +72,8 @@ class _YOweMeAppState extends State<YOweMeApp> {
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
       home: widget.isLoggedIn
-          ? MainNavigationScreen(onThemeChanged: _changeTheme)
-          : const OTPScreen(),
+          ? const OTPScreen()
+          : MainNavigationScreen(onThemeChanged: _changeTheme),
       debugShowCheckedModeBanner: false,
       routes: {
         '/otp': (context) => const OTPScreen(),
@@ -225,199 +226,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ],
         ),
         child: const Icon(Icons.add, color: Colors.white, size: 28),
-      ),
-    );
-  }
-}
-
-class ProfileScreen extends StatelessWidget {
-  final Function(ThemeMode) onThemeChanged;
-
-  const ProfileScreen({super.key, required this.onThemeChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.getBackgroundColor(context),
-      appBar: AppBar(
-        backgroundColor: AppColors.getBackgroundColor(context),
-        elevation: 0,
-        title: Text(
-          'Profile',
-          style: TextStyle(
-            color: AppColors.getPrimaryTextColor(context),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            // Profile Info Card,
-            FutureBuilder<List<Account>>(
-              future: ApiServiceAccounts().fetchAccounts(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'Error: ${snapshot.error}',
-                      style: TextStyle(
-                        color: AppColors.getSecondaryTextColor(context),
-                      ),
-                    ),
-                  );
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No account data available',
-                      style: TextStyle(
-                        color: AppColors.getSecondaryTextColor(context),
-                      ),
-                    ),
-                  );
-                }
-
-                // Assuming we take the first account for the profile
-                final account = snapshot.data![0];
-
-                return Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: AppColors.getCardColor(context),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.getShadowLight(context),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryTeal,
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          child: const Icon(
-                            Icons.person,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          account.customerId,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.getPrimaryTextColor(context),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Account Opened: ${DateFormat.yMMMd().format(account.openingDate)}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.getSecondaryTextColor(context),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Theme Selection Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.getCardColor(context),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.getShadowLight(context),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Theme',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.getPrimaryTextColor(context),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildThemeOption(
-                    context,
-                    'System',
-                    'Use device theme',
-                    Icons.smartphone,
-                    () => onThemeChanged(ThemeMode.system),
-                  ),
-                  _buildThemeOption(
-                    context,
-                    'Light',
-                    'Light theme',
-                    Icons.light_mode,
-                    () => onThemeChanged(ThemeMode.light),
-                  ),
-                  _buildThemeOption(
-                    context,
-                    'Dark',
-                    'Dark theme',
-                    Icons.dark_mode,
-                    () => onThemeChanged(ThemeMode.dark),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildThemeOption(
-    BuildContext context,
-    String title,
-    String subtitle,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
-    return ListTile(
-      leading: Icon(icon, color: AppColors.primaryTeal),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: AppColors.getPrimaryTextColor(context),
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(color: AppColors.getSecondaryTextColor(context)),
-      ),
-      onTap: onTap,
-      trailing: Icon(
-        Icons.chevron_right,
-        color: AppColors.getSecondaryTextColor(context),
       ),
     );
   }
