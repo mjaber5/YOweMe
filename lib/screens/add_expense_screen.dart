@@ -16,6 +16,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _descriptionController = TextEditingController();
   final _amountController = TextEditingController();
+  String _selectedSplitOption = 'Equal Split';
+
 
   String _selectedCategory = 'Food & Dining';
   List<String> _selectedFriends = [];
@@ -531,65 +533,71 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   }
 
   Widget _buildSplitOptionsCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.getCardColor(context),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.getShadowLight(context),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+  return Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: AppColors.getCardColor(context),
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.getShadowLight(context),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Split Options',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.getPrimaryTextColor(context),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Split Options',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.getPrimaryTextColor(context),
-            ),
-          ),
-          const SizedBox(height: 16),
+        ),
+        const SizedBox(height: 16),
 
-          _buildSplitOption(
-            'Equal Split',
-            'Split equally among all participants',
-            LucideIcons.users,
-            true,
-          ),
-          const SizedBox(height: 12),
-          _buildSplitOption(
-            'Custom Split',
-            'Set custom amounts for each person',
-            LucideIcons.calculator,
-            false,
-          ),
-          const SizedBox(height: 12),
-          _buildSplitOption(
-            'Percentage Split',
-            'Split by percentage',
-            LucideIcons.percent,
-            false,
-          ),
-        ],
-      ),
-    );
-  }
+        _buildSplitOption(
+          title: 'Equal Split',
+          subtitle: 'Split equally among all participants',
+          icon: LucideIcons.users,
+        ),
+        const SizedBox(height: 12),
 
-  Widget _buildSplitOption(
-    String title,
-    String description,
-    IconData icon,
-    bool isSelected,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
+        _buildSplitOption(
+          title: 'Custom Split',
+          subtitle: 'Set custom amounts for each person',
+          icon: LucideIcons.calculator,
+        ),
+        const SizedBox(height: 12),
+
+        _buildSplitOption(
+          title: 'Percentage Split',
+          subtitle: 'Split by percentage',
+          icon: LucideIcons.percent,
+        ),
+      ],
+    ),
+  );
+}
+
+ Widget _buildSplitOption({
+  required String title,
+  required String subtitle,
+  required IconData icon,
+}) {
+  final isSelected = _selectedSplitOption == title;
+
+  return GestureDetector(
+    onTap: () {
+      setState(() {
+        _selectedSplitOption = title;
+      });
+    },
+    child: Container(
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isSelected
             ? AppColors.primaryTeal.withOpacity(0.1)
@@ -597,15 +605,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSelected ? AppColors.primaryTeal : Colors.transparent,
+          width: 1.5,
         ),
       ),
       child: Row(
         children: [
           Icon(
             icon,
-            color: isSelected
-                ? AppColors.primaryTeal
-                : AppColors.getSecondaryTextColor(context),
+            color: isSelected ? AppColors.primaryTeal : AppColors.getPrimaryTextColor(context),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -615,8 +622,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14,
                     fontWeight: FontWeight.w600,
+                    fontSize: 15,
                     color: isSelected
                         ? AppColors.primaryTeal
                         : AppColors.getPrimaryTextColor(context),
@@ -624,9 +631,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  description,
+                  subtitle,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 13,
                     color: AppColors.getSecondaryTextColor(context),
                   ),
                 ),
@@ -634,15 +641,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             ),
           ),
           if (isSelected)
-            const Icon(
-              LucideIcons.check,
-              color: AppColors.primaryTeal,
-              size: 20,
-            ),
+            Icon(Icons.check_circle, color: AppColors.primaryTeal, size: 20),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _onDescriptionChanged(String value) {
     // Trigger AI categorization when user stops typing
