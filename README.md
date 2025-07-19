@@ -423,10 +423,6 @@ flutter test --coverage
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
 ### Development Workflow
 
 1. **Fork** the repository
@@ -434,13 +430,6 @@ We welcome contributions from the community! Please see our [Contributing Guidel
 3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
 4. **Push** to the branch (`git push origin feature/amazing-feature`)
 5. **Open** a Pull Request
-
-### Code Standards
-
-- Follow [Flutter Style Guide](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo)
-- Maintain **80%+ test coverage**
-- Use **meaningful commit messages**
-- Update documentation for new features
 
 ---
 
@@ -475,25 +464,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 👥 Support & Contact
-
-<div align="center">
-  
-  ### Get Help
-  
-  [![Issues](https://img.shields.io/badge/Issues-GitHub-red?style=for-the-badge&logo=github)](https://github.com/yourusername/yoweme/issues)
-  [![Discussions](https://img.shields.io/badge/Discussions-GitHub-blue?style=for-the-badge&logo=github)](https://github.com/yourusername/yoweme/discussions)
-  [![Email](https://img.shields.io/badge/Email-support%40yoweme.app-green?style=for-the-badge&logo=gmail)](mailto:support@yoweme.app)
-  
-  ### Documentation
-  
-  [![Wiki](https://img.shields.io/badge/Wiki-Documentation-blue?style=for-the-badge&logo=gitbook)](https://github.com/yourusername/yoweme/wiki)
-  [![API Docs](https://img.shields.io/badge/API-Documentation-orange?style=for-the-badge&logo=swagger)](https://api.yoweme.app/docs)
-  
-</div>
-
----
-
 ## 🌟 Acknowledgments
 
 - **Flutter Team** - For the amazing framework
@@ -508,10 +478,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   ### ⭐ Star this repository if you found it helpful!
   
   **Made with ❤️ using Flutter**
-  
-  [🐛 Report Bug](https://github.com/yourusername/yoweme/issues/new?template=bug_report.md) • 
-  [✨ Request Feature](https://github.com/yourusername/yoweme/issues/new?template=feature_request.md) • 
-  [💬 Join Discussion](https://github.com/yourusername/yoweme/discussions)
   
   ---
   
