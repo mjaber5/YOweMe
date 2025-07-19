@@ -367,20 +367,17 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen>
                     // OTP Input Section
                     _buildOTPInputSection(),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
 
                     // Verify Button
                     _buildVerifyButton(),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
 
                     // Resend Section
                     _buildResendSection(),
 
-                    const SizedBox(height: 32),
-
-                    // Demo Info
-                    _buildDemoInfo(),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -711,58 +708,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen>
                 ],
               ),
             ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDemoInfo() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.primaryTeal.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primaryTeal.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primaryTeal.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              LucideIcons.info,
-              color: AppColors.primaryTeal,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Demo Mode',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryTeal,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'For demonstration purposes, enter "0000" as your verification code to continue.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.getSecondaryTextColor(context),
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

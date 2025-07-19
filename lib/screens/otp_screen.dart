@@ -335,33 +335,24 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
 
                     // App Logo/Brand Section
                     _buildBrandHeader(),
 
-                    const SizedBox(height: 40),
-
-                    // Welcome Header
-                    _buildWelcomeCard(),
-
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
 
                     // Phone Input Form
                     _buildPhoneInputCard(),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
 
                     // Biometric Authentication (if available)
                     if (_isBiometricAvailable) ...[
                       _buildDivider(),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
                       _buildBiometricSection(),
-                      const SizedBox(height: 32),
                     ],
-
-                    // Security Info
-                    _buildSecurityInfo(),
                   ],
                 ),
               ),
@@ -381,13 +372,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
           decoration: BoxDecoration(
             gradient: AppColors.getPrimaryGradient(context),
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primaryTeal.withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
           ),
           child: const Icon(LucideIcons.wallet, color: Colors.white, size: 36),
         ),
@@ -413,71 +397,12 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildWelcomeCard() {
-    return Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: AppColors.getCardColor(context),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.getShadowLight(context),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primaryTeal.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              LucideIcons.smartphone,
-              color: AppColors.primaryTeal,
-              size: 24,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Welcome Back!',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.getPrimaryTextColor(context),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Enter your phone number to continue to your account and start managing expenses with friends.',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.getSecondaryTextColor(context),
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPhoneInputCard() {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: AppColors.getCardColor(context),
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.getShadowLight(context),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
       child: Form(
         key: _formKey,
@@ -492,9 +417,9 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                 color: AppColors.getPrimaryTextColor(context),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             _buildPhoneTextField(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildSendOTPButton(),
           ],
         ),
@@ -606,13 +531,6 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         gradient: AppColors.getPrimaryGradient(context),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryTeal.withOpacity(0.4),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -685,149 +603,80 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildBiometricSection() {
-    return AnimatedBuilder(
-      animation: _biometricScaleAnimation,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _biometricScaleAnimation.value,
-          child: Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primaryTeal.withOpacity(0.08),
-                  AppColors.positiveGreen.withOpacity(0.05),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: AppColors.primaryTeal.withOpacity(0.2),
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              children: [
-                AnimatedBuilder(
-                  animation: _pulseAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _pulseAnimation.value,
-                      child: GestureDetector(
-                        onTap: _isBiometricLoading
-                            ? null
-                            : _handleBiometricLogin,
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppColors.primaryTeal,
-                                AppColors.positiveGreen,
-                              ],
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primaryTeal.withOpacity(0.4),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: _isBiometricLoading
-                              ? const Center(
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.fingerprint,
-                                  size: 36,
-                                  color: Colors.white,
-                                ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Quick Login',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.getPrimaryTextColor(context),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Use your fingerprint or face to sign in securely',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.getSecondaryTextColor(context),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSecurityInfo() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: AppColors.primaryTeal.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primaryTeal.withOpacity(0.2)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primaryTeal.withOpacity(0.08),
+            AppColors.positiveGreen.withOpacity(0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.primaryTeal.withOpacity(0.2),
+          width: 1.5,
+        ),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primaryTeal.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              LucideIcons.shield,
-              color: AppColors.primaryTeal,
-              size: 24,
+          AnimatedBuilder(
+            animation: _pulseAnimation,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _pulseAnimation.value,
+                child: GestureDetector(
+                  onTap: _isBiometricLoading ? null : _handleBiometricLogin,
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.primaryTeal,
+                          AppColors.positiveGreen,
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: _isBiometricLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.fingerprint,
+                            size: 36,
+                            color: Colors.white,
+                          ),
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Quick Login',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.getPrimaryTextColor(context),
             ),
           ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Secure & Private',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryTeal,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'We use bank-level security with OTP verification. Your data is encrypted and never shared with third parties.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.getSecondaryTextColor(context),
-                    height: 1.4,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 8),
+          Text(
+            'Use your fingerprint or face to sign in securely',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.getSecondaryTextColor(context),
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

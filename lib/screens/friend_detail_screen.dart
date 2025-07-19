@@ -274,7 +274,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 20,
-                                vertical: 24,
+                                vertical: 16,
                               ),
                               child: Column(
                                 children: [
@@ -287,7 +287,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                                       size: 40,
                                     ),
                                   ),
-                                  const SizedBox(height: 16),
+                                  const SizedBox(height: 12),
                                   Text(
                                     widget.friendName,
                                     style: const TextStyle(
@@ -296,20 +296,13 @@ class _FriendDetailScreenState extends State<FriendDetailScreen>
                                       color: Colors.white,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Account ID: ${widget.friendId}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
+                                  const SizedBox(height: 12),
                                   const Text(
-                                    'Total Balance:',
+                                    'Transactions Amount: ',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.white,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
