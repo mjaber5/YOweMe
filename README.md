@@ -128,11 +128,11 @@ YOweMe revolutionizes expense management for groups and individuals with intelli
     <tr>
       <td align="center">
         <img src="assets/images/friend-transactions.jpg" alt="Transactions" width="250"/>
-        <br><b>Split Options</b>
+        <br><b>Transactions</b>
       </td>
       <td align="center">
         <img src="assets/images/transfer-transactions.jpg" alt="Transfer Transactions" width="250"/>
-        <br><b>Smart Categories</b>
+        <br><b>Expense</b>
       </td>
       <td align="center">
         <img src="assets/images/transfer-transactions-info.jpg" alt="Transaction Details" width="250"/>
@@ -156,8 +156,8 @@ YOweMe revolutionizes expense management for groups and individuals with intelli
         <br><b>Category Analysis</b>
       </td>
       <td align="center">
-        <img src="assets/images/ai-isights-isights.jpg" alt="Financial Metrics" width="250"/>
-        <br><b>Financial Metrics</b>
+        <img src="assets/images/ai-isights-isights.jpg" alt="Quick Insights" width="250"/>
+        <br><b>Quick Insights</b>
       </td>
     </tr>
   </table>
@@ -170,11 +170,11 @@ YOweMe revolutionizes expense management for groups and individuals with intelli
     <tr>
       <td align="center">
         <img src="assets/images/ai-isights-financial-pred.jpg" alt="preditons" width="250"/>
-        <br><b>PDF Reports</b>
+        <br><b>Payment Tracking</b>
       </td>
       <td align="center">
         <img src="assets/images/ai-isights-repotrs.jpg" alt="Reports generate" width="250"/>
-        <br><b>Payment Tracking</b>
+        <br><b>PDF Reports</b>
       </td>
     </tr>
   </table>
