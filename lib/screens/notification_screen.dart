@@ -146,7 +146,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       l10n.updates,
       l10n.social,
     ];
-    
+
     if (_selectedFilter == 'All') {
       _selectedFilter = l10n.all;
     }
@@ -157,13 +157,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     if (_selectedFilter == l10n.all) {
       return _allNotifications;
     }
-    
+
     String categoryKey = _selectedFilter;
     if (_selectedFilter == l10n.payments) categoryKey = 'Payments';
     if (_selectedFilter == l10n.reminders) categoryKey = 'Reminders';
     if (_selectedFilter == l10n.updates) categoryKey = 'Updates';
     if (_selectedFilter == l10n.social) categoryKey = 'Social';
-    
+
     return _allNotifications
         .where((notification) => notification['category'] == categoryKey)
         .toList();
@@ -173,7 +173,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     _initializeFilters(l10n);
-    
+
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
       appBar: _buildAppBar(l10n),
@@ -206,14 +206,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       surfaceTintColor: Colors.transparent,
       leading: null, // No back arrow
       title: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               l10n.notifications,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 22,
                 fontWeight: FontWeight.w600,
                 color: AppColors.getPrimaryTextColor(context),
               ),
@@ -324,10 +324,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  Widget _buildNotificationItem(Map<String, dynamic> notification, AppLocalizations l10n) {
+  Widget _buildNotificationItem(
+    Map<String, dynamic> notification,
+    AppLocalizations l10n,
+  ) {
     // Translate notification titles and messages based on type
-    String localizedTitle = _getLocalizedNotificationTitle(notification['type'], l10n);
-    
+    String localizedTitle = _getLocalizedNotificationTitle(
+      notification['type'],
+      l10n,
+    );
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.getCardColor(context),
@@ -600,7 +606,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  Widget _buildActionButtons(Map<String, dynamic> notification, AppLocalizations l10n) {
+  Widget _buildActionButtons(
+    Map<String, dynamic> notification,
+    AppLocalizations l10n,
+  ) {
     return Row(
       children: [
         if (notification['actionType'] == 'pay_now') ...[
@@ -618,7 +627,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               ),
               child: Text(
                 l10n.payNow,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -636,7 +648,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               ),
               child: Text(
                 l10n.viewDetails,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -655,7 +670,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               ),
               child: Text(
                 l10n.addFriend,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -676,7 +694,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               ),
               child: Text(
                 l10n.viewDetails,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -767,21 +788,25 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     });
     HapticFeedback.lightImpact();
   }
-void _handlePayNow(Map<String, dynamic> notification, AppLocalizations l10n) {
-  HapticFeedback.mediumImpact();
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        'Processing payment of \$${notification['amount'].toStringAsFixed(2)}...',
-      ),
-      backgroundColor: AppColors.success,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ),
-  );
-}
 
-  void _handleViewDetails(Map<String, dynamic> notification, AppLocalizations l10n) {
+  void _handlePayNow(Map<String, dynamic> notification, AppLocalizations l10n) {
+    HapticFeedback.mediumImpact();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Processing payment of \$${notification['amount'].toStringAsFixed(2)}...',
+        ),
+        backgroundColor: AppColors.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  void _handleViewDetails(
+    Map<String, dynamic> notification,
+    AppLocalizations l10n,
+  ) {
     HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -793,7 +818,10 @@ void _handlePayNow(Map<String, dynamic> notification, AppLocalizations l10n) {
     );
   }
 
-  void _handleAddFriend(Map<String, dynamic> notification, AppLocalizations l10n) {
+  void _handleAddFriend(
+    Map<String, dynamic> notification,
+    AppLocalizations l10n,
+  ) {
     HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

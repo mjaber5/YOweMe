@@ -144,14 +144,6 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
     setState(() => _isLoading = true);
 
     try {
-      // Mock data for demonstration - replace with real data
-      final List<Expense> mockExpenses = []; // Your expense data
-      final Account mockUser = Account(
-        customerId: 'IND_CUST_001',
-        openingDate: DateTime.now(),
-      );
-      final List<Account> mockFriends = []; // Friends list
-
       // Simulate AI processing
       await Future.delayed(const Duration(seconds: 2));
 
@@ -177,7 +169,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
       appBar: AppBar(
@@ -334,7 +326,10 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
                     const SizedBox(height: 4),
                     Text(
                       l10n.aiPoweredInsights,
-                      style: const TextStyle(fontSize: 14, color: Colors.white70),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
                     ),
                   ],
                 ),
@@ -1039,13 +1034,13 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
                   ),
                 ),
                 const SizedBox(height: 8),
-               Text(
-  '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
-  style: TextStyle(
-    fontSize: 14,
-    color: AppColors.getSecondaryTextColor(context),
-  ),
-),
+                Text(
+                  '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.getSecondaryTextColor(context),
+                  ),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   '${l10n.categoriesAnalyzed}: ${_reportData['categories'].length}',
@@ -1092,17 +1087,18 @@ class _AIInsightsScreenState extends State<AIInsightsScreen>
                 ),
               ),
               pw.SizedBox(height: 10),
-            pw.Bullet(
-  text:
-      '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
-),
-pw.Bullet(
-  text:
-      'Monthly Average: \$${(_reportData['summary']!['monthlyAverage'] as double).toStringAsFixed(2)}',
-),
-pw.Bullet(
-  text: '${l10n.topCategory}: ${_reportData['summary']!['topCategory']}',
-),
+              pw.Bullet(
+                text:
+                    '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
+              ),
+              pw.Bullet(
+                text:
+                    'Monthly Average: \$${(_reportData['summary']!['monthlyAverage'] as double).toStringAsFixed(2)}',
+              ),
+              pw.Bullet(
+                text:
+                    '${l10n.topCategory}: ${_reportData['summary']!['topCategory']}',
+              ),
               pw.SizedBox(height: 20),
               pw.Text(
                 'Insights',
@@ -1148,9 +1144,9 @@ pw.Bullet(
                         prediction['title'],
                         style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                       ),
-                     pw.Text(
-  '\$${prediction['amount'].toStringAsFixed(2)} (${prediction['confidence']}% confidence)',
-),
+                      pw.Text(
+                        '\$${prediction['amount'].toStringAsFixed(2)} (${prediction['confidence']}% confidence)',
+                      ),
                       pw.Text(prediction['description']),
                     ],
                   ),
@@ -1200,16 +1196,17 @@ pw.Bullet(
               'Summary',
               style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
             ),
-          pw.Bullet(
-  text:
-      '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
-),
-pw.Bullet(
-  text:
-      'Monthly Average: \$${(_reportData['summary']!['monthlyAverage'] as double).toStringAsFixed(2)}',
-),
             pw.Bullet(
-              text: '${l10n.topCategory}: ${_reportData['summary']['topCategory']}',
+              text:
+                  '${l10n.totalExpenses}: \$${(_reportData['summary']!['totalExpenses'] as double).toStringAsFixed(2)}',
+            ),
+            pw.Bullet(
+              text:
+                  'Monthly Average: \$${(_reportData['summary']!['monthlyAverage'] as double).toStringAsFixed(2)}',
+            ),
+            pw.Bullet(
+              text:
+                  '${l10n.topCategory}: ${_reportData['summary']['topCategory']}',
             ),
           ],
         ),

@@ -3,12 +3,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:yoweme/core/utils/theme/theme.dart';
 import 'package:yoweme/core/utils/constants/colors.dart';
 import 'package:yoweme/feature/settings/profile.dart';
 import 'package:yoweme/l10n/app_localizations.dart';
 import 'package:yoweme/providers/locale_provider.dart';
 import 'package:yoweme/providers/theme_provider.dart';
+
 import 'package:yoweme/screens/dashboard_screen.dart';
 import 'package:yoweme/screens/friend_detail_screen.dart';
 import 'package:yoweme/screens/add_expense_screen.dart';
@@ -16,17 +18,16 @@ import 'package:yoweme/screens/ai_insights_screen.dart';
 import 'package:yoweme/screens/notification_screen.dart';
 import 'package:yoweme/screens/otp_screen.dart';
 import 'package:yoweme/screens/otp_verification_screen.dart';
+
 import 'package:yoweme/services/gemini_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Try to load environment variables - handle if file doesn't exist
   try {
     await dotenv.load(fileName: ".env");
     print("✅ Environment file loaded successfully");
 
-    // Initialize Gemini AI only if API key is available
     if (dotenv.env['GEMINI_API_KEY'] != null &&
         dotenv.env['GEMINI_API_KEY']!.isNotEmpty &&
         dotenv.env['GEMINI_API_KEY']!.startsWith('AIza')) {
@@ -38,10 +39,8 @@ void main() async {
   } catch (e) {
     print("⚠️ .env file not found - creating one for you...");
     print("Please add your Gemini API key to the .env file");
-    // Continue without AI features for now
   }
 
-  // Check login state
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
@@ -74,13 +73,8 @@ class YOweMeApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('en'),
-              Locale('ar'),
-            ],
-            home: isLoggedIn
-                ? const OTPScreen()
-                : const MainNavigationScreen(),
+            supportedLocales: const [Locale('en'), Locale('ar')],
+            home: isLoggedIn ? const OTPScreen() : const MainNavigationScreen(),
             debugShowCheckedModeBanner: false,
             routes: {
               '/otp': (context) => const OTPScreen(),
@@ -91,7 +85,8 @@ class YOweMeApp extends StatelessWidget {
               '/friend-detail': (context) => const FriendDetailScreen(
                 friendName: 'Peter Clarkson',
                 balance: -154.68,
-                friendId: '1', transactions: [],
+                friendId: '1',
+                transactions: [],
               ),
               '/add-expense': (context) => const AddExpenseScreen(),
               '/ai-insights': (context) => const AIInsightsScreen(),
@@ -118,8 +113,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const DashboardScreen(),
     const AIInsightsScreen(),
     const AddExpenseScreen(),
-    const NotificationsScreen(),
-    const ProfileScreen(),
+    const NotificationsScreen(), // Placeholder for NotificationsScreen
+    const ProfileScreen(), // Placeholder for ProfileScreen
   ];
 
   @override

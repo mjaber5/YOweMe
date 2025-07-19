@@ -48,7 +48,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   double getTotalBalance(List<Balance> balances) {
-    return balances.fold(0.0, (sum, balance) => sum + balance.availableBalance);
+    return balances.fold(0.0, (sum, balance) => balance.availableBalance);
   }
 
   double getTotalOwed(List<Balance> balances) {
@@ -66,23 +66,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       backgroundColor: AppColors.getBackgroundColor(context),
       body: SafeArea(
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(18),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     l10n.dashboard,
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 22,
                       color: AppColors.getPrimaryTextColor(context),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(width: 48),
@@ -131,7 +131,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '\$${totalBalance.toStringAsFixed(2)}',
+                        '\$${totalBalance.toStringAsFixed(0)}',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '\$${totalBalance.toStringAsFixed(2)}',
+                                  '\$${totalBalance.toStringAsFixed(0)}',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -185,7 +185,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '\$${totalOwed.toStringAsFixed(2)}',
+                                  '\$${7000}',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -210,7 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '\$${totalOwing.toStringAsFixed(2)}',
+                                  '\$${totalOwing.toStringAsFixed(0)}',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -381,23 +381,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  friend['amount'] == 0
-                      ? l10n.noBalance
-                      : friend['amount'] < 0
-                      ? l10n.youOwe
-                      : l10n.owesYou,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: friend['amount'] == 0
-                        ? AppColors.getSecondaryTextColor(context)
-                        : friend['amount'] < 0
-                        ? AppColors.negativeRed
-                        : AppColors.positiveGreen,
-                  ),
-                ),
-                const SizedBox(height: 4),
                 Row(
                   children: [
                     Text(
